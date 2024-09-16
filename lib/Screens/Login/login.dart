@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flixprime_app/Components/buttons.dart';
 import 'package:flixprime_app/Components/utils.dart';
 import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
 import 'package:flixprime_app/Screens/Registration/registration.dart';
@@ -130,25 +131,27 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                 ),
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  loginUser(context);
-                  //_login(userType);
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.black,
-                  backgroundColor: Colors.yellow, // Text color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                ),
-                child: const Text(
-                  'Login',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
+              isLoading
+                  ? LoadingButton()
+                  : ElevatedButton(
+                      onPressed: () {
+                        loginUser(context);
+                        //_login(userType);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.yellow, // Text color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 15),
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
               const SizedBox(height: 20),
               TextButton(
                 onPressed: () {
