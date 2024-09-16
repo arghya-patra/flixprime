@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
+import 'package:flixprime_app/Screens/Login/login.dart';
+import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,17 +22,17 @@ class _SplashScreenState extends State<SplashScreen> {
     // ServiceManager().getTokenID();
     // LocationService().fetchLocation();
     _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      // if (ServiceManager.userID != '') {
-      //   Navigator.pushAndRemoveUntil(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => DashboardScreen()),
-      //       (route) => false);
-      // } else {
-      //   Navigator.pushAndRemoveUntil(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => LoginScreen()),
-      //       (route) => false);
-      // }
+      if (ServiceManager.userID != '') {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardScreen()),
+            (route) => false);
+      } else {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => OttLoginScreen()),
+            (route) => false);
+      }
     });
   }
 
@@ -42,11 +45,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
       body: Image.asset(
         'images/flix_splash.png',
         height: MediaQuery.of(context).size.height,
-        fit: BoxFit.fill,
+        fit: BoxFit.contain,
       ),
     );
   }

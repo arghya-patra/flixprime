@@ -1,4 +1,12 @@
+import 'dart:convert';
+
+import 'package:flixprime_app/Components/utils.dart';
+import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
+import 'package:flixprime_app/Screens/Registration/registration.dart';
+import 'package:flixprime_app/Service/apiManager.dart';
+import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class OttLoginScreen extends StatefulWidget {
   @override
@@ -10,7 +18,7 @@ class _OttLoginScreenState extends State<OttLoginScreen>
   late TabController _tabController;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -34,7 +42,7 @@ class _OttLoginScreenState extends State<OttLoginScreen>
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.black, Colors.yellow],
+              colors: [Colors.black, Color.fromARGB(255, 153, 153, 153)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -124,7 +132,8 @@ class _OttLoginScreenState extends State<OttLoginScreen>
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  _login(userType);
+                  loginUser(context);
+                  //_login(userType);
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.black,
@@ -150,6 +159,21 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                   style: TextStyle(color: Colors.yellow),
                 ),
               ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RegistrationScreen()),
+                  );
+                  // Forgot password functionality here
+                },
+                child: const Text(
+                  'New User? Register Here',
+                  style: TextStyle(color: Colors.yellow),
+                ),
+              ),
             ],
           ),
         ),
@@ -163,5 +187,59 @@ class _OttLoginScreenState extends State<OttLoginScreen>
 
     // Add your API call logic here using email and password
     print('Logging in as $userType with email: $email and password: $password');
+  }
+
+  Future<String> loginUser(context) async {
+    setState(() {
+      isLoading = true;
+    });
+    String url = APIData.login;
+    print(url.toString());
+    var res = await http.post(Uri.parse(url), body: {
+      'action': 'login',
+      'email': 'sganguly9@gmail.com',
+      'password': '12345678',
+      'user_type': 'subscriber'
+    });
+    var data = jsonDecode(res.body);
+
+    if (data['status'] == 200) {
+      print("______________________________________");
+      print(res.body);
+      print("______________________________________");
+      try {
+        print(data['status']);
+        print(data['userDetails']['authorizationToken']);
+        toastMessage(message: 'Logged In!');
+        // print('${data['userInfo']['id']}');
+        // ServiceManager().setUser('${data['userInfo']['id']}');
+        ServiceManager()
+            .setToken('${data['userDetails']['authorizationToken']}');
+        // ServiceManager.userID = '${data['userInfo']['id']}';
+        ServiceManager.tokenID = '${data['userDetails']['authorizationToken']}';
+        // print(ServiceManager.roleAs);
+        // ServiceManager().getUserData();
+        // toastMessage(message: 'Logged In');
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardScreen()),
+            (route) => false);
+      } catch (e) {
+        toastMessage(message: e.toString());
+        setState(() {
+          isLoading = false;
+        });
+        toastMessage(message: 'Something went wrong');
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      toastMessage(message: 'Invalid data');
+    }
+    setState(() {
+      isLoading = false;
+    });
+    return 'Success';
   }
 }
