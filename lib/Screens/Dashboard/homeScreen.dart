@@ -46,9 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Dashboard',
+          'Home',
           style: TextStyle(
-              color: Color.fromARGB(255, 203, 166, 1),
+              color: Color(0xffe50916), // Color.fromARGB(255, 203, 166, 1),
               fontWeight: FontWeight.bold),
         ),
         flexibleSpace: Container(

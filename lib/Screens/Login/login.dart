@@ -74,7 +74,7 @@ class _OttLoginScreenState extends State<OttLoginScreen>
     return Center(
       child: Card(
         elevation: 12, // Add a stronger shadow for depth
-        color: Colors.grey[900],
+        color: Colors.black54,
         margin: const EdgeInsets.symmetric(horizontal: 20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -89,17 +89,17 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Email/Mobile',
-                  labelStyle: const TextStyle(color: Colors.yellow),
+                  labelStyle: const TextStyle(color: Color(0xffe50916)),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.yellow),
+                    borderSide: const BorderSide(color: Color(0xffe50916)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        const BorderSide(color: Colors.yellow, width: 2),
+                        const BorderSide(color: Color(0xffe50916), width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  prefixIcon: const Icon(Icons.email, color: Colors.yellow),
+                  prefixIcon: const Icon(Icons.email, color: Color(0xffe50916)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -109,20 +109,20 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(color: Colors.yellow),
+                  labelStyle: const TextStyle(color: Color(0xffe50916)),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.yellow),
+                    borderSide: const BorderSide(color: Color(0xffe50916)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        const BorderSide(color: Colors.yellow, width: 2),
+                        const BorderSide(color: Color(0xffe50916), width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  prefixIcon: const Icon(Icons.lock, color: Colors.yellow),
+                  prefixIcon: const Icon(Icons.lock, color: Color(0xffe50916)),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               isLoading
                   ? LoadingButton()
                   : ElevatedButton(
@@ -143,17 +143,17 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                         style: TextStyle(fontSize: 18),
                       ),
                     ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               TextButton(
                 onPressed: () {
                   // Forgot password functionality here
                 },
                 child: const Text(
                   'Forgot Password?',
-                  style: TextStyle(color: Colors.yellow),
+                  style: TextStyle(color: Color(0xffe50916)),
                 ),
               ),
-              const SizedBox(height: 10),
+              // const SizedBox(height: 10),
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -164,7 +164,7 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                 },
                 child: const Text(
                   'New User? Register Here',
-                  style: TextStyle(color: Colors.yellow),
+                  style: TextStyle(color: Color(0xffe50916)),
                 ),
               ),
             ],

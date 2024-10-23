@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 
 class VideoDetailsScreen extends StatefulWidget {
-  String? id;
+  final String? id;
   VideoDetailsScreen({required this.id});
   @override
   _VideoDetailsScreenState createState() => _VideoDetailsScreenState();
@@ -25,13 +25,11 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
 
   Future<Map<String, dynamic>> fetchVideoDetails() async {
     String url = APIData.login;
-    print(url.toString());
     var response = await http.post(Uri.parse(url), body: {
       'action': 'view-content',
       'authorizationToken': ServiceManager.tokenID,
       'video_id': widget.id
     });
-    print(response.body);
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -57,12 +55,11 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: const Text('Video Details'),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.yellow, Colors.white],
+              colors: [Colors.yellow, Colors.orange],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -73,7 +70,6 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
     );
   }
 
-  // Shimmer Effect while loading data
   Widget buildShimmerEffect() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
@@ -94,7 +90,6 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
     );
   }
 
-  // Build UI after fetching video details
   Widget buildVideoDetails() {
     return SingleChildScrollView(
       child: Column(
@@ -108,7 +103,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                 image: videoData?['videoDetails']['landscape'] ?? '',
                 width: double.infinity,
                 height: 200,
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
               ),
               Positioned(
                 bottom: 20,
@@ -131,7 +126,6 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
               ),
             ],
           ),
-
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -140,32 +134,48 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                 // Description
                 Text(
                   videoData?['videoDetails']['description'] ?? '',
-                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  style: const TextStyle(
+                      fontSize: 16, color: Colors.black87, height: 1.4),
                 ),
                 const SizedBox(height: 10),
 
                 // Age Rating and Genre
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    Icon(Icons.star, color: Colors.orangeAccent, size: 18),
+                    const SizedBox(width: 5),
                     Text(
                       'Age Rating: ${videoData?['videoDetails']['age_rating']}',
                       style: const TextStyle(color: Colors.orangeAccent),
                     ),
-                    const SizedBox(width: 20),
+                    // const SizedBox(width: 5),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.movie, color: Colors.orangeAccent, size: 18),
+                    const SizedBox(width: 5),
                     Text(
                       'Genre: ${videoData?['videoDetails']['genre']}',
                       style: const TextStyle(color: Colors.orangeAccent),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                // const SizedBox(height: 10),
 
                 // Video Language
                 videoData?['video_lang_list'].isEmpty
                     ? Container()
-                    : Text(
-                        'Language: ${videoData?['video_lang_list'][0]['name'] ?? "N/A"}',
-                        style: const TextStyle(color: Colors.orangeAccent),
+                    : Row(
+                        children: [
+                          Icon(Icons.language, color: Colors.orangeAccent),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Language: ${videoData?['video_lang_list'][0]['name'] ?? "N/A"}',
+                            style: const TextStyle(color: Colors.orangeAccent),
+                          ),
+                        ],
                       ),
 
                 const SizedBox(height: 20),
@@ -176,47 +186,81 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
 
-                // Related Videos Grid
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: videoData?['related_video_list'].length ?? 0,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                  ),
-                  itemBuilder: (context, index) {
-                    var relatedVideo = videoData?['related_video_list'][index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                // Related Videos Horizontal List
+                SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: videoData?['related_video_list'].length ?? 0,
+                    itemBuilder: (context, index) {
+                      var relatedVideo =
+                          videoData?['related_video_list'][index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => VideoDetailsScreen(
-                                      id: relatedVideo['id'],
-                                    )));
-                      },
-                      child: Card(
-                        elevation: 5,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FadeInImage.assetNetwork(
-                              placeholder: 'images/thumbnail.png',
-                              image: relatedVideo?['thumbnail'] ?? '',
-                              height: 150,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                              builder: (context) => VideoDetailsScreen(
+                                id: relatedVideo['id'],
+                              ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(relatedVideo?['name'] ?? ''),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          width: 150,
+                          child: Card(
+                            color: Colors.black,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                          ],
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(15),
+                                  ),
+                                  child: FadeInImage.assetNetwork(
+                                    placeholder: 'images/thumbnail.png',
+                                    image: relatedVideo?['thumbnail'] ?? '',
+                                    height: 120,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 8.0, top: 8),
+                                  child: Text(
+                                    relatedVideo?['name'] ?? '',
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    relatedVideo?['type_name'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.amber,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

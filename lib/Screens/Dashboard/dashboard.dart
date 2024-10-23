@@ -91,20 +91,24 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildBottomTabBar() {
     return Container(
       decoration: const BoxDecoration(
-        color: Color.fromARGB(255, 203, 166, 1),
-        // gradient: LinearGradient(
-        //   colors: [Colors.black, Color.fromARGB(255, 255, 221, 28)],
-        //   begin: Alignment.topLeft,
-        //   end: Alignment.bottomRight,
-        // ),
-      ),
+          color: Color(0xffe50916) // Color.fromARGB(255, 203, 166, 1),
+          // gradient: LinearGradient(
+          //   colors: [Colors.black, Color.fromARGB(255, 255, 221, 28)],
+          //   begin: Alignment.topLeft,
+          //   end: Alignment.bottomRight,
+          // ),
+          ),
       child: TabBar(
         controller: _tabController,
         tabs: const [
-          Tab(icon: Icon(Icons.home)),
-          Tab(icon: Icon(Icons.movie_sharp)),
-          Tab(icon: Icon(Icons.subscriptions)),
-          Tab(icon: Icon(Icons.person)),
+          Tab(
+              icon: Icon(
+            Icons.home,
+            color: Colors.white,
+          )),
+          Tab(icon: Icon(Icons.movie_sharp, color: Colors.white)),
+          Tab(icon: Icon(Icons.subscriptions, color: Colors.white)),
+          Tab(icon: Icon(Icons.person, color: Colors.white)),
         ],
         indicatorSize: TabBarIndicatorSize.tab,
         indicatorPadding: const EdgeInsets.all(5.0),
