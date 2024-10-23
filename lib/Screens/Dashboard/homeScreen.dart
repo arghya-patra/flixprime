@@ -1,3 +1,4 @@
+import 'package:flixprime_app/Screens/Dashboard/videoDetails.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flutter/material.dart';
 
@@ -171,45 +172,57 @@ class _HomeScreenState extends State<HomeScreen> {
       duration: const Duration(milliseconds: 375),
       child: ScaleAnimation(
         child: FadeInAnimation(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-            width: 140,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                const BoxShadow(
-                  color: Colors.black26,
-                  offset: Offset(2, 2),
-                  blurRadius: 5,
-                ),
-              ],
-              color: Colors.white,
-            ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(10)),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'images/thumbnail.png',
-                      image: item['thumbnail'],
-                      fit: BoxFit.cover,
-                      width: double.infinity,
+          child: GestureDetector(
+            onTap: () {
+              print(item['id']);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => VideoDetailsScreen(
+                            id: item['id'],
+                          )));
+            },
+            child: Container(
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+              width: 140,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  const BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(2, 2),
+                    blurRadius: 5,
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(10)),
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'images/thumbnail.png',
+                        image: item['thumbnail'],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    item['name'],
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.bold),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      item['name'],
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.bold),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

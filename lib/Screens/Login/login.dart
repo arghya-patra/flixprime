@@ -20,6 +20,7 @@ class _OttLoginScreenState extends State<OttLoginScreen>
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -54,41 +55,32 @@ class _OttLoginScreenState extends State<OttLoginScreen>
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TabBar(
-            controller: _tabController,
-            indicatorColor: Colors.yellow,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
-            tabs: [
-              const Tab(text: 'For Subscriber'),
-              const Tab(text: 'For Partner'),
-            ],
+          const SizedBox(height: 20), // Add some spacing
+          Image.asset(
+            'images/flix_splash.png', // Replace with your logo or a relevant OTT image
+            height: 100,
+            width: MediaQuery.of(context).size.width - 50,
+            fit: BoxFit.contain,
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildLoginForm(context, 'For Subscriber'),
-                _buildLoginForm(context, 'For Partner'),
-              ],
-            ),
-          ),
+          const SizedBox(height: 20),
+          _buildLoginForm(context, 'For Subscriber'),
         ],
       ),
+      bottomNavigationBar: _buildFooter(context),
     );
   }
 
   Widget _buildLoginForm(BuildContext context, String userType) {
     return Center(
       child: Card(
-        elevation: 8,
+        elevation: 12, // Add a stronger shadow for depth
         color: Colors.grey[900],
         margin: const EdgeInsets.symmetric(horizontal: 20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(25),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -136,11 +128,10 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                   : ElevatedButton(
                       onPressed: () {
                         loginUser(context);
-                        //_login(userType);
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.black,
-                        backgroundColor: Colors.yellow, // Text color
+                        backgroundColor: Colors.amber,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -170,7 +161,6 @@ class _OttLoginScreenState extends State<OttLoginScreen>
                     MaterialPageRoute(
                         builder: (context) => RegistrationScreen()),
                   );
-                  // Forgot password functionality here
                 },
                 child: const Text(
                   'New User? Register Here',
@@ -184,12 +174,41 @@ class _OttLoginScreenState extends State<OttLoginScreen>
     );
   }
 
-  void _login(String userType) {
-    String email = emailController.text;
-    String password = passwordController.text;
-
-    // Add your API call logic here using email and password
-    print('Logging in as $userType with email: $email and password: $password');
+  Widget _buildFooter(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      color: Colors.black,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Divider(color: Colors.grey), // Subtle divider
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  // Navigate to Terms of Service
+                },
+                child: const Text(
+                  'Terms of Service',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const Text('|', style: TextStyle(color: Colors.grey)),
+              TextButton(
+                onPressed: () {
+                  // Navigate to Privacy Policy
+                },
+                child: const Text(
+                  'Privacy Policy',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Future<String> loginUser(context) async {
@@ -197,32 +216,19 @@ class _OttLoginScreenState extends State<OttLoginScreen>
       isLoading = true;
     });
     String url = APIData.login;
-    print(url.toString());
     var res = await http.post(Uri.parse(url), body: {
       'action': 'login',
-      'email': 'sganguly9@gmail.com',
-      'password': '12345678',
+      'email': "sganguly9@gmail.com", //emailController.text,
+      'password': "12345678", //passwordController.text,
       'user_type': 'subscriber'
     });
     var data = jsonDecode(res.body);
 
     if (data['status'] == 200) {
-      print("______________________________________");
-      print(res.body);
-      print("______________________________________");
       try {
-        print(data['status']);
-        print(data['userDetails']['authorizationToken']);
-        toastMessage(message: 'Logged In!');
-        // print('${data['userInfo']['id']}');
-        // ServiceManager().setUser('${data['userInfo']['id']}');
         ServiceManager()
             .setToken('${data['userDetails']['authorizationToken']}');
-        // ServiceManager.userID = '${data['userInfo']['id']}';
         ServiceManager.tokenID = '${data['userDetails']['authorizationToken']}';
-        // print(ServiceManager.roleAs);
-        // ServiceManager().getUserData();
-        // toastMessage(message: 'Logged In');
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => DashboardScreen()),

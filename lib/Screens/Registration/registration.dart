@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_shimmer/flutter_shimmer.dart'; // Assume you have added shimmer package
+// import 'package:flutter_shimmer/flutter_shimmer.dart';
+import 'package:shimmer/shimmer.dart'; // Assume you have added shimmer package
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -38,8 +39,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
       backgroundColor: Colors.black,
       body: isLoading
-          ? const ProfileShimmer() // Shimmer effect while loading
-          : SingleChildScrollView(
+          ? Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: _buildShimmerEffect(),
+            )
+          :
+          //const ProfileShimmer() // Shimmer effect while loading
+          SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(
@@ -259,6 +266,59 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       });
     }
   }
+}
+
+Widget _buildShimmerEffect() {
+  return Column(
+    children: [
+      CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey[300],
+      ),
+      const SizedBox(height: 16),
+      Container(
+        height: 20,
+        width: 150,
+        color: Colors.grey[300],
+      ),
+      const SizedBox(height: 8),
+      Container(
+        height: 20,
+        width: 200,
+        color: Colors.grey[300],
+      ),
+      const SizedBox(height: 32),
+      Container(
+        height: 20,
+        width: double.infinity,
+        color: Colors.grey[300],
+      ),
+      const SizedBox(height: 16),
+      Container(
+        height: 20,
+        width: double.infinity,
+        color: Colors.grey[300],
+      ),
+      const SizedBox(height: 16),
+      Container(
+        height: 20,
+        width: double.infinity,
+        color: Colors.grey[300],
+      ),
+      const SizedBox(height: 16),
+      Container(
+        height: 20,
+        width: double.infinity,
+        color: Colors.grey[300],
+      ),
+      const SizedBox(height: 16),
+      Container(
+        height: 20,
+        width: double.infinity,
+        color: Colors.grey[300],
+      ),
+    ],
+  );
 }
 
 // Dummy Terms and Conditions Screen

@@ -44,12 +44,12 @@ class LoadingButton extends StatelessWidget {
         color: kWhiteColor,
       ),
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.orange,
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.yellow, // Text color
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(12),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
       ),
     );
   }
