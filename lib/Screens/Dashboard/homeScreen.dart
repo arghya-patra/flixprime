@@ -1,5 +1,6 @@
 import 'package:flixprime_app/Screens/Dashboard/videoDetails.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
+import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:convert';
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print(url.toString());
       var response = await http.post(Uri.parse(url), body: {
         'action': 'home',
+        'authorizationToken': ServiceManager.tokenID
       });
       print(response.body);
       if (response.statusCode == 200) {
@@ -44,22 +46,72 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Home',
-          style: TextStyle(
-              color: Color(0xffe50916), // Color.fromARGB(255, 203, 166, 1),
-              fontWeight: FontWeight.bold),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black, Colors.black54],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+        backgroundColor: Colors.black87,
+        // centerTitle: true,
+
+        // Add an image to the left side
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Container(
+                // color: Colors.yellow,
+                height: 80, // Set desired height
+                width: 80, // Set desired width
+                child: Image.asset(
+                  'images/flix_splash.png', // Replace with your image asset path
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
           ),
         ),
+        actions: [
+          // Search icon
+          // IconButton(
+          //   icon: const Icon(Icons.search, color: Colors.white),
+          //   onPressed: () {
+          //     // Add your search action here
+          //   },
+          // ),
+          // Profile icon inside a circular red container
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
+            decoration: const BoxDecoration(
+              color: Color(0xffe50916), // Red background color
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.person, color: Colors.white),
+              onPressed: () {
+                // Add your profile action here
+              },
+            ),
+          ),
+          // Subscribe button
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Add your subscribe action here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color(0xffe50916), // Subscribe button color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: const Text(
+                'Subscribe',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _ottData,
@@ -211,16 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      item['name'],
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  //
                 ],
               ),
             ),

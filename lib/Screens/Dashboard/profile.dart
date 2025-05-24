@@ -1,4 +1,11 @@
+import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
+import 'package:flixprime_app/Screens/Dashboard/supportScreen.dart';
+import 'package:flixprime_app/Screens/Dashboard/updateProfile.dart';
+import 'package:flixprime_app/Screens/Dashboard/watchlist.dart';
 import 'package:flixprime_app/Screens/Login/login.dart';
+import 'package:flixprime_app/Screens/Login/loginScreen.dart';
+import 'package:flixprime_app/Screens/Package/packageScreen.dart';
+import 'package:flixprime_app/Screens/comingsoon.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flixprime_app/Theme/style.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +22,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _profileImage = 'images/profile.jpeg'; // Initial profile image
 
   bool _isLoading = true;
+  String _subscriberId = ServiceManager.sId;
+  final String _planName = "Premium Plan";
 
   @override
   void initState() {
     super.initState();
+    _subscriberId = ServiceManager.sId;
     // Simulate a loading delay
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
@@ -101,14 +111,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileOption(String title, IconData icon, VoidCallback onTap) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.amber),
-      title: Text(title,
-          style: TextStyle(
-            color: Colors.white,
-          )),
-      trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-      onTap: onTap,
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(icon, color: Colors.white),
+          title: Text(title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              )),
+          onTap: onTap,
+        ),
+        const Divider(color: Colors.white, thickness: 0.5),
+      ],
     );
   }
 
@@ -116,111 +132,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.amber, Colors.black],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        title: const Text(
-          'Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
       body: _isLoading
-          ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: _buildShimmerEffect(),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
+          ? const Center(child: CircularProgressIndicator(color: Colors.red))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage(_profileImage),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 28.0),
+                    child: Text(
+                      "Hello ${ServiceManager.userName}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: _showImageSourceActionSheet,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.orange,
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: const Icon(Icons.edit, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  Text('John Doe', style: TextStyle(color: Colors.white)),
-                  const SizedBox(height: 8),
-                  Text('johndoe@example.com',
-                      style: TextStyle(color: Colors.white)),
-                  const SizedBox(height: 32),
-                  _buildProfileOption('Edit Profile', Icons.edit, () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => EditProfileScreen()));
+
+                  // Subscriber ID and Plan Name
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Subscriber ID: $_subscriberId",
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Plan Name: $_planName",
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Profile Options
+                  _buildProfileOption('Dashboard', Icons.dashboard, () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DashboardScreen()),
+                        (route) => false);
+                    // Handle Dashboard action
                   }),
-                  _buildProfileOption('Settings', Icons.settings, () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => SettingsScreen()));
+                  _buildProfileOption('Update Profile', Icons.person, () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const UpdateProfileScreen()));
+
+                    // Handle Update Profile action
                   }),
-                  _buildProfileOption(
-                      'Buy Membership',
-                      //Billing Details',
-                      Icons.credit_card, () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => BuyMembershipScreen()));
+                  _buildProfileOption('Watch List', Icons.playlist_add, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WatchlistScreen()),
+                    );
+                    // Handle Watch List action
                   }),
-                  _buildProfileOption(
-                      'Call Intake Form',
-                      //User Management
-                      Icons.group, () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => CallIntakeFormScreen()));
+                  _buildProfileOption('Package', Icons.card_membership, () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const SubscriptionPackageScreen()));
+
+                    // Handle Package action
+                  }),
+                  _buildProfileOption('Support', Icons.lock, () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ContactUsScreen()));
+                    // Handle Set Password action
                   }),
                   _buildProfileOption('Logout', Icons.logout, () {
                     logoutBuilder(context, onClickYes: () {
                       try {
                         Navigator.pop(context);
-                        setState(() {
-                          _isLoading = true;
-                        });
+                        // setState(() {
+                        //   isLoading = true;
+                        // });
                         ServiceManager().removeAll();
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => OttLoginScreen()),
+                                builder: (context) => LoginScreen()),
                             (route) => false);
                       } catch (e) {
-                        setState(() {
-                          _isLoading = false;
-                        });
+                        // setState(() {
+                        //   isLoading = false;
+                        // });
                       }
                     });
+                    // Handle Logout action
                   }),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

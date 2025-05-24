@@ -11,6 +11,7 @@ class ServiceManager {
   static String profileURL = '';
   static String userName = '';
   static String userEmail = '';
+  static String sId = '';
   static String userMobile = '';
   static String userDob = '';
   static String userAltMobile = '';
@@ -46,14 +47,44 @@ class ServiceManager {
     //getUserData();---need to use later
   }
 
-  void setAddressID(String addressID) async {
+  void setName(String name) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('addressID', addressID);
+    prefs.setString('name', userName);
   }
 
-  void getAddressID() async {
+  void getName() async {
     final prefs = await SharedPreferences.getInstance();
-    addressID = prefs.getString('addressID') ?? '';
+    userName = prefs.getString('name') ?? '';
+  }
+
+  void setEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('email', email);
+  }
+
+  void getEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    userEmail = prefs.getString('email') ?? '';
+  }
+
+  void setMobile(String phone) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('phone', phone);
+  }
+
+  void getMobile() async {
+    final prefs = await SharedPreferences.getInstance();
+    userMobile = prefs.getString('phone') ?? '';
+  }
+
+  void setSubId(String subId) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('subscriber_id', subId);
+  }
+
+  void getSubId() async {
+    final prefs = await SharedPreferences.getInstance();
+    sId = prefs.getString('subscriber_id') ?? '';
   }
 
   void removeAll() async {

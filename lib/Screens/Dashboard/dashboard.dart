@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flixprime_app/Components/utils.dart';
 import 'package:flixprime_app/Screens/Dashboard/collection_all.dart';
 import 'package:flixprime_app/Screens/Dashboard/homeScreen.dart';
+import 'package:flixprime_app/Screens/Dashboard/homeView.dart';
 import 'package:flixprime_app/Screens/Dashboard/profile.dart';
 import 'package:flixprime_app/Screens/Dashboard/watchlist.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
@@ -78,7 +79,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          HomeScreen(),
+          HomeViewScreen(), // HomeScreen(),
           CollectionScreen(),
           WatchlistScreen(),
           ProfileScreen(),
@@ -91,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   Widget _buildBottomTabBar() {
     return Container(
       decoration: const BoxDecoration(
-          color: Color(0xffe50916) // Color.fromARGB(255, 203, 166, 1),
+          color: Colors.black87 // Color.fromARGB(255, 203, 166, 1),
           // gradient: LinearGradient(
           //   colors: [Colors.black, Color.fromARGB(255, 255, 221, 28)],
           //   begin: Alignment.topLeft,

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
 import 'package:flixprime_app/Screens/Login/login.dart';
+import 'package:flixprime_app/Screens/Login/loginScreen.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
 
@@ -18,10 +19,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     // super.initState();
-    // ServiceManager().getUserID();
-    // ServiceManager().getTokenID();
+    ServiceManager().getUserID();
+    ServiceManager().getTokenID();
     // LocationService().fetchLocation();
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       if (ServiceManager.userID != '') {
         Navigator.pushAndRemoveUntil(
             context,
@@ -30,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => OttLoginScreen()),
+            MaterialPageRoute(builder: (context) => LoginScreen()),
             (route) => false);
       }
     });
@@ -47,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Image.asset(
-        'images/flix_splash.png',
+        'images/FlixPrimeAnim.gif',
         height: MediaQuery.of(context).size.height,
         fit: BoxFit.contain,
       ),
