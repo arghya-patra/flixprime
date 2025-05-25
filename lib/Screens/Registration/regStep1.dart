@@ -105,10 +105,10 @@ class _RegStepState extends State<RegStep> {
                         'Enter OTP',
                         style: TextStyle(color: Colors.white),
                       ),
-                      Text(
-                        resOtp!,
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      // Text(
+                      //   resOtp!,
+                      //   style: TextStyle(color: Colors.white),
+                      // ),
                       const SizedBox(height: 10),
                       PinCodeTextField(
                         appContext: context,
@@ -127,8 +127,8 @@ class _RegStepState extends State<RegStep> {
                           activeFillColor: Colors.grey[800],
                           inactiveFillColor: Colors.grey[800],
                           selectedFillColor: Colors.grey[800],
-                          activeColor: Colors.yellow,
-                          selectedColor: Colors.yellow,
+                          activeColor: Colors.red,
+                          selectedColor: Colors.red,
                           inactiveColor: Colors.grey,
                         ),
                         textStyle: const TextStyle(color: Colors.white),

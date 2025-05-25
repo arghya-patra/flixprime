@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flixprime_app/Components/buttons.dart';
@@ -24,8 +25,41 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   String? resOtp = '';
 
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  int resendCooldown = 20;
+  bool canResendOtp = false;
+  Timer? _timer;
+  bool showResend = false;
+
+  final TextEditingController mobileController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    showResend = false;
+    super.initState();
+  }
+
+  void startResendTimer() {
+    setState(() {
+      resendCooldown = 60;
+      canResendOtp = false;
+    });
+
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (resendCooldown == 0) {
+        timer.cancel();
+        setState(() {
+          canResendOtp = true;
+        });
+      } else {
+        setState(() {
+          resendCooldown--;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 TextField(
-                  controller: emailController,
+                  controller: mobileController,
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
@@ -95,29 +129,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Password Field (only visible when isPasswordLogin is true)
-                if (isPasswordLogin)
-                  Column(
-                    children: [
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: passwordController,
-                        obscureText: true,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.grey[800],
-                          hintText: 'Password',
-                          hintStyle: TextStyle(color: Colors.grey[500]),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                // OTP Field (only visible when OTP is sent and password login is not enabled)
                 if (isOtpSent && !isPasswordLogin)
                   Column(
                     children: [
@@ -148,8 +159,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           activeFillColor: Colors.grey[800],
                           inactiveFillColor: Colors.grey[800],
                           selectedFillColor: Colors.grey[800],
-                          activeColor: Colors.yellow,
-                          selectedColor: Colors.yellow,
+                          activeColor: Colors.red,
+                          selectedColor: Colors.red,
                           inactiveColor: Colors.grey,
                         ),
                         textStyle: const TextStyle(color: Colors.white),
@@ -158,13 +169,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 const SizedBox(height: 20),
+                //const SizedBox(height: 10),
+                showResend
+                    ? TextButton(
+                        onPressed: canResendOtp
+                            ? () {
+                                sendOtp(context);
+                              }
+                            : null,
+                        child: Text(
+                          canResendOtp
+                              ? 'Resend OTP'
+                              : 'Resend OTP in $resendCooldown sec',
+                          style: TextStyle(
+                            color: canResendOtp ? Colors.blue : Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : Container(),
                 // Send OTP or Login button based on isPasswordLogin
                 if (!isOtpSent && !isPasswordLogin)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (emailController.text.isNotEmpty) {
+                        if (mobileController.text.isNotEmpty) {
                           setState(() {
                             isOtpSent = true;
                           });
@@ -190,40 +220,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 const SizedBox(height: 10),
-                // OR section
-                // const Text(
-                //   'OR',
-                //   style: TextStyle(color: Colors.white),
-                // ),
-                // const SizedBox(height: 10),
-                // // Login with password/OTP button
-                // SizedBox(
-                //   width: double.infinity,
-                //   child: OutlinedButton(
-                //     onPressed: () {
-                //       setState(() {
-                //         isPasswordLogin = !isPasswordLogin;
-                //         isOtpSent = false; // Reset OTP when switching mode
-                //       });
-                //     },
-                //     style: OutlinedButton.styleFrom(
-                //       padding: const EdgeInsets.symmetric(vertical: 15),
-                //       side: const BorderSide(color: Colors.white),
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(10),
-                //       ),
-                //     ),
-                //     child: Text(
-                //       isPasswordLogin
-                //           ? 'Login with OTP'
-                //           : 'Login with Password',
-                //       style: const TextStyle(
-                //         color: Colors.white,
-                //         fontSize: 18,
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 const SizedBox(height: 20),
                 // Final Login button (visible when isPasswordLogin or isOtpSent is true)
                 if (isPasswordLogin || isOtpSent)
@@ -234,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         : ElevatedButton(
                             onPressed: () {
                               submitOtp(context);
-                              // loginUser(context);
+
                               if (isOtpSent) {
                                 print("Entered OTP: $otp");
                               } else {
@@ -284,28 +280,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // // OR LOGIN WITH
-                // const Text(
-                //   'OR LOGIN WITH',
-                //   style: TextStyle(color: Colors.white),
-                // ),
-                // const SizedBox(height: 10),
-                // // Social Login Icons
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     IconButton(
-                //       onPressed: () {},
-                //       icon: const Icon(Icons.facebook),
-                //       color: Colors.blue,
-                //     ),
-                //     IconButton(
-                //       onPressed: () {},
-                //       icon: const Icon(Icons.g_mobiledata),
-                //       color: Colors.red,
-                //     ),
-                //   ],
-                // ),
               ],
             ),
           ),
@@ -318,11 +292,12 @@ class _LoginScreenState extends State<LoginScreen> {
     print("Send otp");
     setState(() {
       isLoading = true;
+      showResend = true;
     });
     String url = APIData.login;
     var res = await http.post(Uri.parse(url), body: {
       'action': 'login',
-      'mobile': emailController.text,
+      'mobile': mobileController.text,
       'isd': "+91"
     });
     var data = jsonDecode(res.body);
@@ -336,17 +311,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         setState(() {
-          // ServiceManager().setUser(data['userDetails']['userId']);
-          // ServiceManager.userID = data['userDetails']['userId'];
           ServiceManager().setToken('${data['authorizationToken']}');
           ServiceManager.tokenID = '${data['authorizationToken']}';
         });
-        // print(["*(*())", ServiceManager.tokenID]);
-
-        // Navigator.pushAndRemoveUntil(
-        //     context,
-        //     MaterialPageRoute(builder: (context) => DashboardScreen()),
-        //     (route) => false);
+        startResendTimer();
       } catch (e) {
         toastMessage(message: e.toString());
         setState(() {
@@ -425,52 +393,4 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     return 'Success';
   }
-
-  // Future<String> loginUser(context) async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   String url = APIData.login;
-  //   var res = await http.post(Uri.parse(url), body: {
-  //     'action': 'login',
-  //     'email': "sganguly9@gmail.com", //emailController.text,
-  //     'password': "12345678", //passwordController.text,
-  //     'user_type': 'subscriber'
-  //   });
-  //   var data = jsonDecode(res.body);
-  //   print(data);
-
-  //   if (data['status'] == 200) {
-  //     try {
-  //       setState(() {
-  //         ServiceManager().setUser(data['userDetails']['userId']);
-  //         ServiceManager.userID = data['userDetails']['userId'];
-  //         ServiceManager()
-  //             .setToken('${data['userDetails']['authorizationToken']}');
-  //         ServiceManager.tokenID =
-  //             '${data['userDetails']['authorizationToken']}';
-  //       });
-
-  //       Navigator.pushAndRemoveUntil(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => DashboardScreen()),
-  //           (route) => false);
-  //     } catch (e) {
-  //       toastMessage(message: e.toString());
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //       toastMessage(message: 'Something went wrong');
-  //     }
-  //   } else {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     toastMessage(message: 'Invalid data');
-  //   }
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  //   return 'Success';
-  // }
 }

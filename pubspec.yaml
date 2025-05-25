@@ -48,7 +48,7 @@ dependencies:
   flutter_inappwebview: ^5.3.2
   intl: ^0.18.1
   carousel_slider: ^4.2.1
-  
+  webview_flutter: ^4.2.2
 
 
 dev_dependencies:

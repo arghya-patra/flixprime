@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flixprime_app/Screens/Dashboard/videoplayerWV.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +117,18 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const VideoPlayerWebViewScreen(
+                              videoUrl:
+                                  'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red, // Yellow button color
                         shape: RoundedRectangleBorder(
@@ -226,47 +238,10 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
               ],
             ),
           ),
-
-          // Age Rating, Language, Genre
-
-          // Red Divider
           const Divider(
             color: Colors.red,
             thickness: 2,
           ),
-          // Related Videos Section
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text('Trailer Videos',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-          ),
-          SizedBox(
-            height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: videoData?['trailer_video_list'].length ?? 0,
-              itemBuilder: (context, index) {
-                var relatedVideo = videoData?['trailer_video_list'][index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            VideoDetailsScreen(id: relatedVideo['id']),
-                      ),
-                    );
-                  },
-                  child: buildRelatedVideoCard(relatedVideo),
-                );
-              },
-            ),
-          ),
-
-          // Related Videos Section
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text('Related Videos',

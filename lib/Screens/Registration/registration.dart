@@ -129,7 +129,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           onTap: _pickImage,
                           child: CircleAvatar(
                             radius: 50,
-                            backgroundColor: Colors.yellow,
+                            backgroundColor: Colors.red,
                             backgroundImage: _selectedImage != null
                                 ? FileImage(_selectedImage!)
                                 : null,
@@ -163,8 +163,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                           //: null,
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            backgroundColor: Colors.yellow,
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
                             padding: const EdgeInsets.symmetric(

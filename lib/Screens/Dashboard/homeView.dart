@@ -270,7 +270,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
 
         (apiData!['hits_video_list'] != null &&
                 apiData!['hits_video_list'].isNotEmpty)
-            ? _buildSection("Most Viewed", apiData!['hits_video_list'])
+            ? _buildSection("Trending", apiData!['hits_video_list'])
             : Container(),
         SizedBox(
           height: 10,
@@ -281,7 +281,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
         ),
         (apiData!['release_video_list'] != null &&
                 apiData!['release_video_list'].isNotEmpty)
-            ? _buildSection("Release Video", apiData!['release_video_list'])
+            ? _buildSection("New Release", apiData!['release_video_list'])
             : Container(),
         (apiData!['upcoming_video_list'] != null &&
                 apiData!['upcoming_video_list'].isNotEmpty)
@@ -299,7 +299,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
             ? _buildSection("Movies", apiData!['Movies'])
             : Container(),
         (apiData!['Series'] != null && apiData!['Series'].isNotEmpty)
-            ? _buildSection("Web Series", apiData!['Series'])
+            ? _buildSection("Series", apiData!['Series'])
             : Container(),
 
         (apiData!['Documentary'] != null && apiData!['Documentary'].isNotEmpty)
@@ -310,7 +310,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                 apiData!['Music Videos'].isNotEmpty)
             ? _buildSection("Music Videos", apiData!['Music Videos'])
             : Container(),
-        _buildBanner(apiData!['banner3_list']),
+        _buildBanner(apiData!['banner2_list']),
         // _buildSection("Trailer list", apiData!['trailer_list']),
         apiResponse != null
             ? buildDashboardSlider(apiResponse!, 'bottom')
@@ -533,7 +533,6 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                           child: AspectRatio(
                             aspectRatio: 4 / 3,
                             child: Stack(
-                              alignment: Alignment.center,
                               children: [
                                 CachedNetworkImage(
                                   imageUrl: item['thumbnail'],
@@ -550,6 +549,53 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: double.infinity,
+                                ),
+                                Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: item['thumbnail'],
+                                      placeholder: (_, __) =>
+                                          Shimmer.fromColors(
+                                        baseColor: Colors.grey[300]!,
+                                        highlightColor: Colors.grey[100]!,
+                                        child: Container(
+                                          color: Colors.grey[300],
+                                        ),
+                                      ),
+                                      errorWidget: (_, __, ___) => const Icon(
+                                          Icons.error,
+                                          color: Colors.red),
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                    Positioned(
+                                      top: 12, // Adjusted top position
+                                      right: 0, // Adjusted right position
+                                      child: Transform.rotate(
+                                        angle:
+                                            0.59, // 45 degrees in radians (adjusted for better fit)
+                                        child: Container(
+                                          width: 50,
+                                          color: item['content_type'] == 'Free'
+                                              ? Colors.yellow[700]
+                                              : Colors.red,
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical:
+                                                  2), // Increased vertical padding
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            item['content_type'] ?? '',
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
