@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:webview_flutter/webview_flutter.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -294,22 +296,96 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         Checkbox(
           value: isTermsAccepted,
           onChanged: (value) {
-            setState(() {
-              isTermsAccepted = value!;
-            });
+            if (value == true) {
+              _showTermsPopup(context);
+            } else {
+              setState(() {
+                isTermsAccepted = false;
+              });
+            }
           },
           checkColor: Colors.black,
           activeColor: Colors.white,
         ),
         GestureDetector(
-          onTap: _openTermsAndConditions,
+          onTap: () => _showTermsPopup(context),
           child: const Text(
             'Accept Terms and Conditions',
             style: TextStyle(
-                color: Colors.white, decoration: TextDecoration.underline),
+              color: Colors.white,
+              decoration: TextDecoration.underline,
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showTermsPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.all(12),
+          child: SizedBox(
+            height: 500,
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    'Terms and Conditions',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: InAppWebView(
+                    initialUrlRequest: URLRequest(
+                      url: Uri.parse(
+                          "https://flixprime.in/info/terms-and-conditions"),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        isTermsAccepted = true;
+                      });
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.check, color: Colors.white),
+                    label: const Text(
+                      'Accept & Close',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

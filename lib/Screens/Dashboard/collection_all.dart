@@ -218,6 +218,45 @@ class _CollectionScreenState extends State<CollectionScreen> {
                                     width: double.infinity,
                                     height: double.infinity,
                                   ),
+                                  //tag section
+                                  // Tag (FREE ribbon) positioned at top-right corner
+                                  video['content_type'] == 'Premium'
+                                      ? Container()
+                                      : Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: ClipPath(
+                                            clipper: CornerTriangleClipper(),
+                                            child: Container(
+                                              width: 55,
+                                              height: 55,
+                                              color: video['content_type'] ==
+                                                      'Free'
+                                                  ? Colors.yellow[700]
+                                                  : Colors.red,
+                                              child: Align(
+                                                alignment: Alignment(0.7, -0.5),
+                                                child: Transform.rotate(
+                                                  angle:
+                                                      0.785398, // 45 degrees in radians
+                                                  child: Text(
+                                                    video['content_type'] ?? '',
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          video['content_type'] ==
+                                                                  'Rent'
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                 ],
                               ),
                             ),
@@ -313,4 +352,19 @@ class _CollectionScreenState extends State<CollectionScreen> {
       ),
     );
   }
+}
+
+class CornerTriangleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(size.width, 0); // top-right
+    path.lineTo(size.width, size.height); // bottom-right
+    path.lineTo(0, 0); // top-left
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

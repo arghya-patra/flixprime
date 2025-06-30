@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flixprime_app/Components/buttons.dart';
@@ -27,6 +28,39 @@ class _RegStepState extends State<RegStep> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  int resendCooldown = 30;
+  bool canResendOtp = false;
+  Timer? _timer;
+  bool showResend = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    showResend = false;
+    super.initState();
+  }
+
+  void startResendTimer() {
+    setState(() {
+      resendCooldown = 30;
+      canResendOtp = false;
+    });
+
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (resendCooldown == 0) {
+        timer.cancel();
+        setState(() {
+          canResendOtp = true;
+        });
+      } else {
+        setState(() {
+          resendCooldown--;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,6 +171,24 @@ class _RegStepState extends State<RegStep> {
                     ],
                   ),
                 const SizedBox(height: 20),
+                showResend
+                    ? TextButton(
+                        onPressed: canResendOtp
+                            ? () {
+                                sendOtp(context);
+                              }
+                            : null,
+                        child: Text(
+                          canResendOtp
+                              ? 'Resend OTP'
+                              : 'Resend OTP in $resendCooldown sec',
+                          style: TextStyle(
+                            color: canResendOtp ? Colors.blue : Colors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : Container(),
                 // Send OTP or Login button based on isPasswordLogin
                 if (!isOtpSent && !isPasswordLogin)
                   SizedBox(
@@ -260,6 +312,7 @@ class _RegStepState extends State<RegStep> {
     print("Send otp");
     setState(() {
       isLoading = true;
+      showResend = true;
     });
     String url = APIData.login;
     var res = await http.post(Uri.parse(url), body: {

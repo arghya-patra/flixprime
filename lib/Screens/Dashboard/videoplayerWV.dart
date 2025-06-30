@@ -9,9 +9,13 @@ class VideoPlayerWebViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Now Playing'),
-        backgroundColor: Colors.red,
+        centerTitle: true,
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Set the back icon color to white
+        ),
       ),
       body: WebViewWidget(
         controller: WebViewController()

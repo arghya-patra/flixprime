@@ -107,7 +107,7 @@ class _DashboardScreenState extends State<DashboardScreen>
             Icons.home,
             color: Colors.white,
           )),
-          Tab(icon: Icon(Icons.movie_sharp, color: Colors.white)),
+          Tab(icon: Icon(Icons.search, color: Colors.white)),
           Tab(icon: Icon(Icons.subscriptions, color: Colors.white)),
           Tab(icon: Icon(Icons.person, color: Colors.white)),
         ],

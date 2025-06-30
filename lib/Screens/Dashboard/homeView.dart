@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flixprime_app/Screens/Dashboard/ainAPpWebView.dart';
+import 'package:flixprime_app/Screens/Dashboard/animatedSlider.dart';
+import 'package:flixprime_app/Screens/Dashboard/notiListScreen.dart';
 import 'package:flixprime_app/Screens/Dashboard/profile.dart';
 import 'package:flixprime_app/Screens/Dashboard/videoDetails.dart';
+import 'package:flixprime_app/Screens/Login/loginScreen.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +25,13 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
   Map<String, dynamic>? apiData;
   bool isLoading = true;
   Map<String, dynamic>? apiResponse;
-
+  int notificationCount = 0;
   @override
   void initState() {
     super.initState();
     fetchData();
     loadSliderData();
+    //fetchNotificationCount();
   }
 
   Future<Map<String, dynamic>?> fetchDashboardSliderData() async {
@@ -53,21 +57,59 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
   Future<void> fetchData() async {
     try {
       String url = APIData.login;
+      print("Request URL: $url");
 
-      print(url.toString());
-      var response = await http.post(Uri.parse(url), body: {
-        'action': 'home',
-        'authorizationToken': ServiceManager.tokenID
-      });
-      print(["####", response.body]);
+      var response = await http.post(
+        Uri.parse(url),
+        body: {
+          'action': 'home',
+          'authorizationToken': ServiceManager.tokenID,
+        },
+      );
+
+      print(["#### Response Body:", response.body]);
+
       if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        if (responseData['status'] == 201 &&
+            responseData['isSuccess'] == "false" &&
+            responseData['error'] == "Token does not exist!") {
+          print("Logout: Invalid token detected.");
+          ServiceManager().removeAll();
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false);
+          return;
+        }
+
         setState(() {
-          apiData = json.decode(response.body);
+          apiData = responseData;
           isLoading = false;
         });
+      } else {
+        debugPrint("HTTP Error: ${response.statusCode}");
       }
     } catch (e) {
       debugPrint("Error fetching data: $e");
+    }
+  }
+
+  Future<void> fetchNotificationCount() async {
+    String url = APIData.login; // Replace with real API
+    final response = await http.post(Uri.parse(url), body: {
+      'action': 'add-notification-in-view',
+      'authorizationToken': ServiceManager.tokenID,
+    });
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        notificationCount = data['count'] ?? 0;
+      });
+    } else {
+      debugPrint('Failed to load notifications');
     }
   }
 
@@ -80,6 +122,51 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
   }
 
   Widget buildDashboardSlider(
+      Map<String, dynamic> apiResponse, String position) {
+    List<dynamic> sliderData = position == "top"
+        ? apiResponse['top_slider'] ?? []
+        : apiResponse['bottom_slider'] ?? [];
+
+    if (sliderData.isEmpty) return const SizedBox();
+
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          itemCount: sliderData.length,
+          options: CarouselOptions(
+            height: 200,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayAnimationDuration: const Duration(milliseconds: 600),
+            viewportFraction: 1.0,
+            enlargeCenterPage: true,
+            scrollDirection: Axis.horizontal,
+            enableInfiniteScroll: true,
+            pauseAutoPlayOnTouch: true,
+            scrollPhysics: const ClampingScrollPhysics(),
+          ),
+          itemBuilder: (context, index, realIdx) {
+            final item = sliderData[index];
+            final imageUrl = item['background'] ?? '';
+            final title = item['title'] ?? '';
+            final logoUrl = item['slider_logo'] ?? '';
+            final genre = item['genre'] ?? '';
+            final language = item['language'] ?? '';
+
+            return AnimatedSliderItem(
+                imageUrl: imageUrl,
+                title: title,
+                logoUrl: logoUrl,
+                genre: genre,
+                language: language);
+          },
+        ),
+        // const SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Widget buildDashboardSlider2(
       Map<String, dynamic> apiResponse, String position) {
     List<dynamic> sliderData = position == "top"
         ? apiResponse['top_slider'] ?? []
@@ -184,60 +271,96 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black87,
-        // centerTitle: true,
-
-        // Add an image to the left side
-        title: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Container(
-                // color: Colors.yellow,
-                height: 80, // Set desired height
-                width: 90, // Set desired width
-                child: Image.asset(
-                  'images/flix_splash.png', // Replace with your image asset path
-                  fit: BoxFit.contain,
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.black87,
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  height: 80,
+                  width: 90,
+                  child: Image.asset(
+                    'images/flix_splash.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
+              ],
+            ),
+          ),
+          actions: [
+            // 🔔 Notification icon with badge
+            Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NotificationScreen()),
+                    );
+                  },
+                ),
+                if (notificationCount > 0)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints:
+                          const BoxConstraints(minWidth: 20, minHeight: 20),
+                      child: Center(
+                        child: Text(
+                          '$notificationCount',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            // 👤 Profile icon
+            Container(
+              margin:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
+              decoration: const BoxDecoration(
+                color: Color(0xffe50916),
+                shape: BoxShape.circle,
               ),
-            ],
-          ),
+              child: IconButton(
+                icon: const Icon(Icons.person, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => ProfileScreen()));
+                },
+              ),
+            ),
+          ],
         ),
-        actions: [
-          // Search icon
-          // IconButton(
-          //   icon: const Icon(Icons.search, color: Colors.white),
-          //   onPressed: () {
-          //     // Add your search action here
-          //   },
-          // ),
-          // Profile icon inside a circular red container
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
-            decoration: const BoxDecoration(
-              color: Color(0xffe50916), // Red background color
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.person, color: Colors.white),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
-                // Add your profile action here
-              },
-            ),
-          ),
-        ],
-      ),
-      body: isLoading
-          ? _buildShimmerEffect()
-          : apiData == null
-              ? _buildErrorWidget()
-              : _buildDashboardContent(),
-    );
+        body: RefreshIndicator(
+          color: Colors.deepOrange,
+          backgroundColor: Colors.white,
+          onRefresh: () async {
+            await fetchData();
+            await loadSliderData();
+            //fetchNotificationCount();
+          },
+          child: isLoading
+              ? _buildShimmerEffect()
+              : apiData == null
+                  ? _buildErrorWidget()
+                  : _buildDashboardContent(),
+        ));
   }
 
   Widget _buildShimmerEffect() {
@@ -452,7 +575,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
             child: Text(
               title,
               style: const TextStyle(
@@ -482,7 +605,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 5),
           child: Text(
             title,
             style: const TextStyle(
@@ -569,32 +692,45 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                                       width: double.infinity,
                                       height: double.infinity,
                                     ),
-                                    Positioned(
-                                      top: 12, // Adjusted top position
-                                      right: 0, // Adjusted right position
-                                      child: Transform.rotate(
-                                        angle:
-                                            0.59, // 45 degrees in radians (adjusted for better fit)
-                                        child: Container(
-                                          width: 50,
-                                          color: item['content_type'] == 'Free'
-                                              ? Colors.yellow[700]
-                                              : Colors.red,
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical:
-                                                  2), // Increased vertical padding
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            item['content_type'] ?? '',
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
+                                    item['content_type'] == 'Premium'
+                                        ? Container()
+                                        : Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: ClipPath(
+                                              clipper: CornerTriangleClipper(),
+                                              child: Container(
+                                                width: 55,
+                                                height: 55,
+                                                color: item['content_type'] ==
+                                                        'Free'
+                                                    ? Colors.yellow[700]
+                                                    : Colors.red,
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment(0.7, -0.5),
+                                                  child: Transform.rotate(
+                                                    angle:
+                                                        0.785398, // 45 degrees in radians
+                                                    child: Text(
+                                                      item['content_type'] ??
+                                                          '',
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            item['content_type'] ==
+                                                                    'Rent'
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ],
@@ -612,4 +748,19 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
       ],
     );
   }
+}
+
+class CornerTriangleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(size.width, 0); // top-right
+    path.lineTo(size.width, size.height); // bottom-right
+    path.lineTo(0, 0); // top-left
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

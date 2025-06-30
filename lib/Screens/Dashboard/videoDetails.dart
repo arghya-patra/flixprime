@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flixprime_app/Screens/Dashboard/homeView.dart';
 import 'package:flixprime_app/Screens/Dashboard/videoplayerWV.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
@@ -45,6 +46,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
       setState(() {
         videoData = data;
         print(videoData);
+        print(["@@@##", videoData]);
         isLoading = false;
       });
     } catch (e) {
@@ -105,29 +107,76 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                 // Thumbnail Image
                 Column(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: 'images/thumbnail.png',
-                        image: videoData?['videoDetails']['landscape'] ?? '',
-                        width: 120,
-                        height: 180,
-                        fit: BoxFit.cover,
-                      ),
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'images/thumbnail.png',
+                            image:
+                                videoData?['videoDetails']['landscape'] ?? '',
+                            width: 120,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        videoData?['videoDetails']['content_type'] == 'Premium'
+                            ? Container()
+                            : Positioned(
+                                top: 0,
+                                right: 0,
+                                child: ClipPath(
+                                  clipper: CornerTriangleClipper(),
+                                  child: Container(
+                                    width: 55,
+                                    height: 55,
+                                    color: videoData?['videoDetails']
+                                                ['content_type'] ==
+                                            'Free'
+                                        ? Colors.yellow[700]
+                                        : Colors.red,
+                                    child: Align(
+                                      alignment: Alignment(0.7, -0.5),
+                                      child: Transform.rotate(
+                                        angle:
+                                            0.785398, // 45 degrees in radians
+                                        child: Text(
+                                          videoData?['videoDetails']
+                                                  ['content_type'] ??
+                                              '',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                            color: videoData?['videoDetails']
+                                                        ['content_type'] ==
+                                                    'Rent'
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const VideoPlayerWebViewScreen(
-                              videoUrl:
-                                  'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
-                            ),
-                          ),
-                        );
+                        videoData!['videoDetails']['video_url'] != null
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      VideoPlayerWebViewScreen(
+                                    videoUrl: videoData!['videoDetails']
+                                        ['video_url'],
+                                    // 'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
+                                  ),
+                                ),
+                              )
+                            : null;
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red, // Yellow button color
@@ -268,6 +317,28 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                     );
                   },
                   child: buildRelatedVideoCard(relatedVideo),
+                );
+              },
+            ),
+          ),
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: videoData?['recommended_video_list'].length ?? 0,
+              itemBuilder: (context, index) {
+                var recomVideo = videoData?['recommended_video_list'][index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            VideoDetailsScreen(id: recomVideo['id']),
+                      ),
+                    );
+                  },
+                  child: buildRelatedVideoCard(recomVideo),
                 );
               },
             ),

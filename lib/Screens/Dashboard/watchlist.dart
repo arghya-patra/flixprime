@@ -131,15 +131,43 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                       height: double.infinity,
                     ),
                     Positioned(
-                      top: 6,
-                      right: 6,
+                      bottom: 6,
+                      right: -10,
                       child: IconButton(
-                        icon: const Icon(Icons.more_vert,
+                        icon: const Icon(Icons.favorite,
                             color: Colors.amber, size: 20),
                         padding: EdgeInsets.zero, // Reduce button padding
                         constraints:
                             const BoxConstraints(), // Prevent extra space
                         onPressed: () => showRemoveDialog(item['id']),
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: ClipPath(
+                        clipper: CornerTriangleClipper(),
+                        child: Container(
+                          width: 70,
+                          height: 70,
+                          color: item['content_type'] == 'Free'
+                              ? Colors.yellow[700]
+                              : Colors.red,
+                          child: Align(
+                            alignment: Alignment(0.7, -0.5),
+                            child: Transform.rotate(
+                              angle: 0.785398, // 45 degrees in radians
+                              child: Text(
+                                item['content_type'] ?? '',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -273,4 +301,19 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       ),
     );
   }
+}
+
+class CornerTriangleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(size.width, 0); // top-right
+    path.lineTo(size.width, size.height); // bottom-right
+    path.lineTo(0, 0); // top-left
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
