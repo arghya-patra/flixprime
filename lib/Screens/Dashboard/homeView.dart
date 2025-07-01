@@ -166,108 +166,6 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
     );
   }
 
-  // Widget buildDashboardSlider2(
-  //     Map<String, dynamic> apiResponse, String position) {
-  //   List<dynamic> sliderData = position == "top"
-  //       ? apiResponse['top_slider'] ?? []
-  //       : apiResponse['bottom_slider'] ?? [];
-
-  //   if (sliderData.isEmpty) {
-  //     return const SizedBox();
-  //   }
-
-  //   return Column(
-  //     children: [
-  //       CarouselSlider.builder(
-  //         itemCount: sliderData.length,
-  //         options: CarouselOptions(
-  //           height: 200,
-  //           autoPlay: true,
-  //           autoPlayInterval: const Duration(seconds: 4),
-  //           autoPlayAnimationDuration: const Duration(milliseconds: 600),
-  //           viewportFraction: 1.0,
-  //           enlargeCenterPage: true,
-  //           scrollDirection: Axis.horizontal,
-  //           enableInfiniteScroll: true,
-  //           pauseAutoPlayOnTouch: true,
-  //           scrollPhysics: const ClampingScrollPhysics(),
-  //         ),
-  //         itemBuilder: (context, index, realIdx) {
-  //           final item = sliderData[index];
-  //           final imageUrl = item['background'] ?? '';
-  //           final title = item['title'] ?? '';
-
-  //           return GestureDetector(
-  //             onTap: () {
-  //               // You can handle tap action using item['link'] or item['id']
-  //             },
-  //             child: Container(
-  //               margin: const EdgeInsets.symmetric(horizontal: 5),
-  //               decoration: BoxDecoration(
-  //                 borderRadius: BorderRadius.circular(12),
-  //                 boxShadow: [
-  //                   BoxShadow(
-  //                     color: Colors.black.withOpacity(0.2),
-  //                     blurRadius: 8,
-  //                     spreadRadius: 2,
-  //                     offset: const Offset(0, 4),
-  //                   ),
-  //                 ],
-  //               ),
-  //               child: ClipRRect(
-  //                 borderRadius: BorderRadius.circular(12),
-  //                 child: Stack(
-  //                   fit: StackFit.expand,
-  //                   children: [
-  //                     CachedNetworkImage(
-  //                       imageUrl: imageUrl,
-  //                       placeholder: (_, __) => Shimmer.fromColors(
-  //                         baseColor: Colors.grey[300]!,
-  //                         highlightColor: Colors.grey[100]!,
-  //                         child: Container(color: Colors.grey[300]),
-  //                       ),
-  //                       errorWidget: (_, __, ___) =>
-  //                           const Icon(Icons.error, size: 50),
-  //                       fit: BoxFit.cover,
-  //                     ),
-  //                     Positioned(
-  //                       bottom: 25,
-  //                       left: 0,
-  //                       right: 0,
-  //                       child: Container(
-  //                         padding: const EdgeInsets.symmetric(
-  //                             horizontal: 12, vertical: 8),
-  //                         decoration: BoxDecoration(
-  //                           color: Colors.black.withOpacity(0.2),
-  //                           borderRadius: const BorderRadius.only(
-  //                             bottomLeft: Radius.circular(12),
-  //                             bottomRight: Radius.circular(12),
-  //                           ),
-  //                         ),
-  //                         child: Text(
-  //                           title,
-  //                           style: const TextStyle(
-  //                             color: Colors.white,
-  //                             fontSize: 18,
-  //                             fontWeight: FontWeight.bold,
-  //                           ),
-  //                           maxLines: 2,
-  //                           overflow: TextOverflow.ellipsis,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       ),
-  //       const SizedBox(height: 10),
-  //     ],
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -398,7 +296,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
         SizedBox(
           height: 10,
         ),
-        _buildBanner1(apiData!['banner1_list']),
+        _buildBanner(apiData!['banner1_list']),
         SizedBox(
           height: 10,
         ),
@@ -516,7 +414,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
     return Column(
       children: [
         SizedBox(
-          height: 200,
+          height: 160,
           child: PageView.builder(
             controller: _pageController,
             itemCount: bannerList.length,

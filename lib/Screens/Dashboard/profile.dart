@@ -32,6 +32,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    ServiceManager().getSubId();
+    ServiceManager().getName();
+    print(["*****", ServiceManager.sId]);
+    print(["*****", ServiceManager.userName]);
     fetchData();
     _subscriberId = ServiceManager.sId;
 

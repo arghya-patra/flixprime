@@ -21,6 +21,11 @@ class _SplashScreenState extends State<SplashScreen> {
     // super.initState();
     ServiceManager().getUserID();
     ServiceManager().getTokenID();
+    ServiceManager().getSubId();
+    ServiceManager().getName();
+    //  ServiceManager().get;
+    //   ServiceManager().getTokenID();
+    //    ServiceManager().getTokenID();
     // LocationService().fetchLocation();
     _timer = Timer.periodic(Duration(seconds: 10), (timer) {
       if (ServiceManager.userID != '') {

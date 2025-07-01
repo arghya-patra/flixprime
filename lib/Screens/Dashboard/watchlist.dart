@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flixprime_app/Screens/Login/loginScreen.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,17 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      if (data['status'] == 201 &&
+          data['isSuccess'] == "false" &&
+          data['error'] == "Token does not exist!") {
+        print("Logout: Invalid token detected.");
+        ServiceManager().removeAll();
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false);
+        return;
+      }
       setState(() {
         watchList = data['watch_list'];
       });
