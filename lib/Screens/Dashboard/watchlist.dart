@@ -75,10 +75,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
               padding: const EdgeInsets.all(8.0),
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 35.0,
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 0.0,
                   mainAxisSpacing: 9.0,
-                  childAspectRatio: 0.8,
+                  childAspectRatio: 0.7,
                 ),
                 itemCount: watchList.length,
                 itemBuilder: (context, index) {
@@ -142,34 +142,38 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                         onPressed: () => showRemoveDialog(item['id']),
                       ),
                     ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: ClipPath(
-                        clipper: CornerTriangleClipper(),
-                        child: Container(
-                          width: 70,
-                          height: 70,
-                          color: item['content_type'] == 'Free'
-                              ? Colors.yellow[700]
-                              : Colors.red,
-                          child: Align(
-                            alignment: Alignment(0.7, -0.5),
-                            child: Transform.rotate(
-                              angle: 0.785398, // 45 degrees in radians
-                              child: Text(
-                                item['content_type'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                    item['content_type'] == 'Premium'
+                        ? Container()
+                        : Positioned(
+                            top: 0,
+                            right: 0,
+                            child: ClipPath(
+                              clipper: CornerTriangleClipper(),
+                              child: Container(
+                                width: 55,
+                                height: 55,
+                                color: item['content_type'] == 'Free'
+                                    ? Colors.yellow[700]
+                                    : Colors.red,
+                                child: Align(
+                                  alignment: Alignment(0.7, -0.5),
+                                  child: Transform.rotate(
+                                    angle: 0.785398, // 45 degrees in radians
+                                    child: Text(
+                                      item['content_type'] ?? '',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: item['content_type'] == 'Rent'
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
 import 'package:flixprime_app/Screens/Dashboard/supportScreen.dart';
 import 'package:flixprime_app/Screens/Dashboard/updateProfile.dart';
@@ -6,11 +8,13 @@ import 'package:flixprime_app/Screens/Login/login.dart';
 import 'package:flixprime_app/Screens/Login/loginScreen.dart';
 import 'package:flixprime_app/Screens/Package/packageScreen.dart';
 import 'package:flixprime_app/Screens/comingsoon.dart';
+import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flixprime_app/Theme/style.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -28,13 +32,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    fetchData();
     _subscriberId = ServiceManager.sId;
+
+    // if (_subscriberId == null || _subscriberId == '' || _subscriberId.isEmpty) {
+    //   ServiceManager().removeAll();
+    //   Navigator.pushAndRemoveUntil(
+    //       context,
+    //       MaterialPageRoute(builder: (context) => LoginScreen()),
+    //       (route) => false);
+    // }
     // Simulate a loading delay
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isLoading = false;
       });
     });
+  }
+
+  Future<void> fetchData() async {
+    try {
+      String url = APIData.login;
+      print("Request URL: $url");
+
+      var response = await http.post(
+        Uri.parse(url),
+        body: {
+          'action': 'home',
+          'authorizationToken': ServiceManager.tokenID,
+        },
+      );
+
+      print(["#### Response Body:", response.body]);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        if (responseData['status'] == 201 &&
+            responseData['isSuccess'] == "false" &&
+            responseData['error'] == "Token does not exist!") {
+          print("Logout: Invalid token detected.");
+          ServiceManager().removeAll();
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false);
+          return;
+        }
+
+        setState(() {});
+      } else {
+        debugPrint("HTTP Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint("Error fetching data: $e");
+    }
   }
 
   Future<String?> logoutBuilder(BuildContext context,

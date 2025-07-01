@@ -168,7 +168,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               const SizedBox(height: 12),
               buildTextField("Email", emailController),
               const SizedBox(height: 12),
-              buildDatePicker(),
+              buildDatePicker(context),
               const SizedBox(height: 12),
               buildGenderSelector(),
               const SizedBox(height: 24),
@@ -208,31 +208,38 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     );
   }
 
-  Widget buildDatePicker() {
+  Widget buildDatePicker(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
           context: context,
-          initialDate: selectedDate ?? DateTime.now(),
+          initialDate: DateTime.now(),
           firstDate: DateTime(1900),
           lastDate: DateTime.now(),
         );
         if (pickedDate != null) {
-          setState(() => selectedDate = pickedDate);
+          setState(() {
+            selectedDate = pickedDate;
+          });
         }
       },
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.grey[850],
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white),
         ),
-        child: Text(
-          selectedDate == null
-              ? "Select Date of Birth"
-              : "DOB: ${selectedDate!.toLocal().toString().split(' ')[0]}",
-          style: const TextStyle(color: Colors.white),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              selectedDate == null
+                  ? 'Date of Birth'
+                  : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            const Icon(Icons.calendar_today, color: Colors.white),
+          ],
         ),
       ),
     );

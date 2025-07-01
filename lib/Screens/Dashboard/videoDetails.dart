@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flixprime_app/Screens/Dashboard/homeView.dart';
 import 'package:flixprime_app/Screens/Dashboard/videoplayerWV.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
@@ -292,7 +293,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
             thickness: 2,
           ),
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
             child: Text('Related Videos',
                 style: TextStyle(
                     fontSize: 18,
@@ -322,6 +323,55 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
             ),
           ),
           SizedBox(
+            height: 10,
+          ),
+          const Divider(
+            color: Colors.red,
+            thickness: 2,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
+            child: Text('Episodes',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+          ),
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: videoData?['episode_list'].length ?? 0,
+              itemBuilder: (context, index) {
+                var episode = videoData?['episode_list'][index];
+                return GestureDetector(
+                  onTap: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         VideoDetailsScreen(id: episode['id']),
+                    //   ),
+                    // );
+                  },
+                  child: buildEpisodeCard(episode),
+                );
+              },
+            ),
+          ),
+          const Divider(
+            color: Colors.red,
+            thickness: 2,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
+            child: Text('Recommended Videos',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+          ),
+          SizedBox(
             height: 200,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -342,6 +392,9 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                 );
               },
             ),
+          ),
+          SizedBox(
+            height: 10,
           ),
         ],
       ),
@@ -383,53 +436,185 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
     );
   }
 
-  Widget buildRelatedVideoCard(Map<String, dynamic>? relatedVideo) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      width: 150,
-      child: Card(
-        color: Colors.black,
-        elevation: 5,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+  Widget buildEpisodeCard(Map<String, dynamic>? item) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerWebViewScreen(
+                videoUrl: item!['episode_url']
+                // 'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
+                ),
+          ),
+        );
+      },
+      child: Container(
+        width: 110,
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromARGB(255, 103, 82, 82),
+              blurRadius: 5,
+              offset: Offset(2, 2),
+            ),
+          ],
+          color: Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(15)),
-              child: FadeInImage.assetNetwork(
-                placeholder: 'images/thumbnail.png',
-                image: relatedVideo?['thumbnail'] == 'https://flixprime.in/'
-                    ? "https://flixprime.in/uploads/advertisement/1709202927_0.jpg"
-                    : relatedVideo?['thumbnail'] ?? '',
-                height: 120,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 8),
-              child: Text(
-                relatedVideo?['name'] ?? '',
-                style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text(
-                relatedVideo?['type_name'] ?? '',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.amber,
-                  fontWeight: FontWeight.w600,
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: AspectRatio(
+                  aspectRatio: 4 / 3,
+                  child: Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: item?['thumbnail'] == 'https://flixprime.in/'
+                            ? "https://flixprime.in/uploads/advertisement/1709202927_0.jpg"
+                            : item?['thumbnail'] ?? '',
+                        placeholder: (_, __) => Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(color: Colors.grey[300]),
+                        ),
+                        errorWidget: (_, __, ___) =>
+                            const Icon(Icons.error, color: Colors.red),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      const Center(
+                        child: Icon(
+                          Icons.play_circle_fill,
+                          size: 40,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.black54, Colors.transparent],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                          child: Text(
+                            item?['episode_name'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildRelatedVideoCard(Map<String, dynamic>? item) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoDetailsScreen(id: item?['id']),
+          ),
+        );
+      },
+      child: Container(
+        width: 110,
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromARGB(255, 103, 82, 82),
+              blurRadius: 5,
+              offset: Offset(2, 2),
+            ),
+          ],
+          color: Colors.white,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: AspectRatio(
+                  aspectRatio: 4 / 3,
+                  child: Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: item?['thumbnail'] == 'https://flixprime.in/'
+                            ? "https://flixprime.in/uploads/advertisement/1709202927_0.jpg"
+                            : item?['thumbnail'] ?? '',
+                        placeholder: (_, __) => Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(color: Colors.grey[300]),
+                        ),
+                        errorWidget: (_, __, ___) =>
+                            const Icon(Icons.error, color: Colors.red),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                      if (item?['content_type'] != 'Premium')
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: ClipPath(
+                            clipper: CornerTriangleClipper(),
+                            child: Container(
+                              width: 55,
+                              height: 55,
+                              color: item?['content_type'] == 'Free'
+                                  ? Colors.yellow[700]
+                                  : Colors.red,
+                              child: Align(
+                                alignment: const Alignment(0.7, -0.5),
+                                child: Transform.rotate(
+                                  angle: 0.785398, // 45 degrees
+                                  child: Text(
+                                    item?['content_type'] ?? '',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: item?['content_type'] == 'Rent'
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

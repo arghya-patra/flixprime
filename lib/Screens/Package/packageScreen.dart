@@ -115,39 +115,59 @@ class _SubscriptionPackageScreenState extends State<SubscriptionPackageScreen> {
                     ),
                   ],
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                child: const Row(
+                  children: [
                     Expanded(
-                      child: Text("Plan",
+                      flex: 1,
+                      child: Center(
+                        child: Text(
+                          "Plan",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16)),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     ),
                     Expanded(
-                      child: Text("Price",
-                          textAlign: TextAlign.center,
+                      flex: 1,
+                      child: Center(
+                        child: Text(
+                          "Price",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16)),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     ),
                     Expanded(
-                      child: Text("Status",
-                          textAlign: TextAlign.center,
+                      flex: 1,
+                      child: Center(
+                        child: Text(
+                          "Validity",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16)),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     ),
                     Expanded(
-                      child: Text("Validity",
-                          textAlign: TextAlign.end,
+                      flex: 1,
+                      child: Center(
+                        child: Text(
+                          "Status",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16)),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -165,7 +185,7 @@ class _SubscriptionPackageScreenState extends State<SubscriptionPackageScreen> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 16),
+                          vertical: 14, horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(14),
@@ -186,33 +206,59 @@ class _SubscriptionPackageScreenState extends State<SubscriptionPackageScreen> {
                         children: [
                           // Plan Name
                           Expanded(
-                            child: Text(
-                              package['name'],
-                              style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.w600),
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                package['name'],
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
 
                           // Price
                           Expanded(
-                            child: Text(
-                              "₹${package['price']}",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepOrange,
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                "₹${package['price']}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepOrange,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+
+                          // Validity
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                "${package['validity']}",
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.teal,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
 
                           // Status
                           Expanded(
+                            flex: 1,
                             child: Center(
                               child: isActive
                                   ? Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
+                                          horizontal: 10, vertical: 6),
                                       decoration: BoxDecoration(
                                         color: Colors.green,
                                         borderRadius: BorderRadius.circular(20),
@@ -220,38 +266,32 @@ class _SubscriptionPackageScreenState extends State<SubscriptionPackageScreen> {
                                       child: const Text(
                                         "Active",
                                         style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                        ),
                                       ),
                                     )
-                                  : OutlinedButton.icon(
+                                  : OutlinedButton(
                                       onPressed: () {
                                         // Handle subscription purchase
                                       },
-                                      icon: const Icon(Icons.shopping_cart,
-                                          size: 12, color: Colors.deepPurple),
-                                      label: const Text("Buy"),
+                                      child: const Text(
+                                        "Buy",
+                                        style: TextStyle(fontSize: 13),
+                                      ),
                                       style: OutlinedButton.styleFrom(
                                         side: const BorderSide(
                                             color: Colors.deepPurpleAccent),
                                         shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
                                         foregroundColor: Colors.deepPurple,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 6),
                                       ),
                                     ),
-                            ),
-                          ),
-
-                          // Validity
-                          Expanded(
-                            child: Text(
-                              "${package['validity']}",
-                              textAlign: TextAlign.end,
-                              style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.teal),
                             ),
                           ),
                         ],

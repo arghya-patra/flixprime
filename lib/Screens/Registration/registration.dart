@@ -321,10 +321,44 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  void _showTermsPopup(BuildContext context) {
+  fetchTermsContent() async {
+    try {
+      final response = await http.post(
+        Uri.parse("https://flixprime.in/app-api.php"),
+        body: {
+          'action': 'terms-and-conditions',
+          'authorizationToken': ServiceManager.tokenID,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        print(jsonData);
+        if (jsonData['list'] != null) {
+          return jsonData['list'];
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint("Error fetching terms: $e");
+      return null;
+    }
+  }
+
+  void _showTermsPopup(BuildContext context) async {
+    final data = await fetchTermsContent();
+    print(["##############", data]);
+
+    if (data == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to load Terms and Conditions.")),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (_) {
         return Dialog(
           shape:
@@ -335,11 +369,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   alignment: Alignment.centerLeft,
-                  child: const Text(
-                    'Terms and Conditions',
-                    style: TextStyle(
+                  child: Text(
+                    data['title'] ?? 'Terms & Conditions',
+                    textAlign: TextAlign.justify,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.deepOrange,
@@ -348,10 +383,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const Divider(height: 1),
                 Expanded(
-                  child: InAppWebView(
-                    initialUrlRequest: URLRequest(
-                      url: Uri.parse(
-                          "https://flixprime.in/info/terms-and-conditions"),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        data['description'] ?? '',
+                        textAlign: TextAlign.justify,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
                     ),
                   ),
                 ),

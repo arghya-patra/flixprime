@@ -158,10 +158,10 @@ class _CollectionScreenState extends State<CollectionScreen> {
             child: GridView.builder(
               padding: const EdgeInsets.all(12.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 35.0,
+                crossAxisCount: 3,
+                crossAxisSpacing: 0.0,
                 mainAxisSpacing: 9.0,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.7,
               ),
               itemCount: filteredList.length,
               itemBuilder: (context, index) {
