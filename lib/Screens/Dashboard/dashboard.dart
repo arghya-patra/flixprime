@@ -1,15 +1,8 @@
-import 'dart:convert';
-
-import 'package:flixprime_app/Components/utils.dart';
 import 'package:flixprime_app/Screens/Dashboard/collection_all.dart';
-import 'package:flixprime_app/Screens/Dashboard/homeScreen.dart';
 import 'package:flixprime_app/Screens/Dashboard/homeView.dart';
 import 'package:flixprime_app/Screens/Dashboard/profile.dart';
 import 'package:flixprime_app/Screens/Dashboard/watchlist.dart';
-import 'package:flixprime_app/Service/apiManager.dart';
-import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class DashboardScreen extends StatefulWidget {
   @override

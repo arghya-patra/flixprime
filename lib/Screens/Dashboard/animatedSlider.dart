@@ -8,13 +8,16 @@ class AnimatedSliderItem extends StatefulWidget {
   final String logoUrl;
   final String genre;
   final String language;
+  final bool isBottom;
 
-  const AnimatedSliderItem(
-      {required this.imageUrl,
-      required this.title,
-      required this.logoUrl,
-      required this.genre,
-      required this.language});
+  const AnimatedSliderItem({
+    required this.imageUrl,
+    required this.title,
+    required this.logoUrl,
+    required this.genre,
+    required this.language,
+    required this.isBottom,
+  });
 
   @override
   State<AnimatedSliderItem> createState() => AnimatedSliderItemState();
@@ -132,7 +135,7 @@ class AnimatedSliderItemState extends State<AnimatedSliderItem>
                 ),
               ),
               Positioned(
-                bottom: 25,
+                bottom: 90,
                 left: 50,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +152,6 @@ class AnimatedSliderItemState extends State<AnimatedSliderItem>
                                 child: Container(
                                   width: 100,
                                   height: 40,
-                                  //color: Colors.grey[300],
                                 ),
                               ),
                               errorWidget: (_, __, ___) =>
@@ -213,6 +215,32 @@ class AnimatedSliderItemState extends State<AnimatedSliderItem>
                   ],
                 ),
               ),
+
+              // ✅ Conditionally show Play button at bottom-left
+              if (widget.isBottom)
+                Positioned(
+                  bottom: 12,
+                  left: 12,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      // Handle play button press
+                    },
+                    icon: const Icon(Icons.play_arrow, color: Colors.white),
+                    label: const Text(
+                      "Play",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 4,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

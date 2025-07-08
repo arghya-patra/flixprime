@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
+import 'package:flixprime_app/Screens/Dashboard/dashboardOverview.dart';
 import 'package:flixprime_app/Screens/Dashboard/supportScreen.dart';
 import 'package:flixprime_app/Screens/Dashboard/updateProfile.dart';
 import 'package:flixprime_app/Screens/Dashboard/watchlist.dart';
@@ -195,10 +196,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 28.0),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 28.0),
                     child: Text(
-                      "Hello ${ServiceManager.userName}",
+                      "Hello",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 0.0),
+                    child: Text(
+                      "${ServiceManager.userName}",
                       style: const TextStyle(
                         fontSize: 20,
                         color: Colors.white,
@@ -225,14 +237,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontSize: 16,
                               fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Plan Name: $_planName",
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        // const SizedBox(height: 8),
+                        // Text(
+                        //   "Plan Name: $_planName",
+                        //   style: const TextStyle(
+                        //       color: Colors.white,
+                        //       fontSize: 16,
+                        //       fontWeight: FontWeight.bold),
+                        // ),
                       ],
                     ),
                   ),
@@ -240,11 +252,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // Profile Options
                   _buildProfileOption('Dashboard', Icons.dashboard, () {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardScreen()),
-                        (route) => false);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DashboardOverviewScreen()),
+                    );
                     // Handle Dashboard action
                   }),
                   _buildProfileOption('Update Profile', Icons.person, () {

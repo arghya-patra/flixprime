@@ -89,8 +89,8 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 0.0,
-                  mainAxisSpacing: 9.0,
-                  childAspectRatio: 0.7,
+                  mainAxisSpacing: 5.0,
+                  childAspectRatio: 0.75,
                 ),
                 itemCount: watchList.length,
                 itemBuilder: (context, index) {
@@ -104,10 +104,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
 
   Widget buildWatchlistItem(Map<String, dynamic> item) {
     return Container(
-      width: 110,
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      width: 107,
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
         boxShadow: const [
           BoxShadow(
             color: Color.fromARGB(255, 103, 82, 82),
@@ -122,7 +122,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
         children: [
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               child: AspectRatio(
                 aspectRatio: 4 / 3,
                 child: Stack(
@@ -196,103 +196,103 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
     );
   }
 
-  Widget buildWatchlistItem2(Map<String, dynamic> item) {
-    return Container(
-      width: 110,
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromARGB(255, 103, 82, 82),
-            blurRadius: 5,
-            offset: Offset(2, 2),
-          ),
-        ],
-        color: Colors.white,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: AspectRatio(
-                aspectRatio: 4 / 3,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: item['thumbnail'],
-                      placeholder: (_, __) => Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: Container(
-                          color: Colors.grey[300],
-                        ),
-                      ),
-                      errorWidget: (_, __, ___) =>
-                          const Icon(Icons.error, color: Colors.red),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  // Widget buildWatchlistItem2(Map<String, dynamic> item) {
+  //   return Container(
+  //     width: 110,
+  //     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+  //     decoration: BoxDecoration(
+  //       borderRadius: BorderRadius.circular(5),
+  //       boxShadow: const [
+  //         BoxShadow(
+  //           color: Color.fromARGB(255, 103, 82, 82),
+  //           blurRadius: 5,
+  //           offset: Offset(2, 2),
+  //         ),
+  //       ],
+  //       color: Colors.white,
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Expanded(
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(5),
+  //             child: AspectRatio(
+  //               aspectRatio: 4 / 3,
+  //               child: Stack(
+  //                 alignment: Alignment.center,
+  //                 children: [
+  //                   CachedNetworkImage(
+  //                     imageUrl: item['thumbnail'],
+  //                     placeholder: (_, __) => Shimmer.fromColors(
+  //                       baseColor: Colors.grey[300]!,
+  //                       highlightColor: Colors.grey[100]!,
+  //                       child: Container(
+  //                         color: Colors.grey[300],
+  //                       ),
+  //                     ),
+  //                     errorWidget: (_, __, ___) =>
+  //                         const Icon(Icons.error, color: Colors.red),
+  //                     fit: BoxFit.cover,
+  //                     width: double.infinity,
+  //                     height: double.infinity,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
 
-    // SizedBox(
-    //   height: 180, // Ensure consistent height
-    //   child: Card(
-    //     color: Colors.transparent,
-    //     shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(15),
-    //     ),
-    //     elevation: 5,
-    //     child: Stack(
-    //       children: [
-    //         Container(
-    //           decoration: BoxDecoration(
-    //             borderRadius: BorderRadius.circular(10),
-    //             boxShadow: const [
-    //               BoxShadow(
-    //                 color: Color.fromARGB(255, 103, 82, 82),
-    //                 blurRadius: 5,
-    //                 offset: Offset(2, 2),
-    //               ),
-    //             ],
-    //             color: Colors.black,
-    //           ),
-    //           child: ClipRRect(
-    //             borderRadius: BorderRadius.circular(15),
-    //             child: AspectRatio(
-    //               aspectRatio: 4 / 3,
-    //               child: Image.network(
-    //                 item['thumbnail'],
-    //                 fit: BoxFit.cover,
-    //                 width: double.infinity,
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //         Positioned(
-    //           top: 8,
-    //           right: 8,
-    //           child: IconButton(
-    //             icon: const Icon(Icons.more_vert, color: Colors.amber),
-    //             onPressed: () => showRemoveDialog(item['id']),
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
-  }
+  // SizedBox(
+  //   height: 180, // Ensure consistent height
+  //   child: Card(
+  //     color: Colors.transparent,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(15),
+  //     ),
+  //     elevation: 5,
+  //     child: Stack(
+  //       children: [
+  //         Container(
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(10),
+  //             boxShadow: const [
+  //               BoxShadow(
+  //                 color: Color.fromARGB(255, 103, 82, 82),
+  //                 blurRadius: 5,
+  //                 offset: Offset(2, 2),
+  //               ),
+  //             ],
+  //             color: Colors.black,
+  //           ),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(15),
+  //             child: AspectRatio(
+  //               aspectRatio: 4 / 3,
+  //               child: Image.network(
+  //                 item['thumbnail'],
+  //                 fit: BoxFit.cover,
+  //                 width: double.infinity,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Positioned(
+  //           top: 8,
+  //           right: 8,
+  //           child: IconButton(
+  //             icon: const Icon(Icons.more_vert, color: Colors.amber),
+  //             onPressed: () => showRemoveDialog(item['id']),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   ),
+  // );
+  // }
 
   void showRemoveDialog(String id) {
     showDialog(

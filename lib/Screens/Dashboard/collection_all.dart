@@ -168,12 +168,12 @@ class _CollectionScreenState extends State<CollectionScreen> {
           // ),
           Expanded(
             child: GridView.builder(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(4.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 0.0,
-                mainAxisSpacing: 9.0,
-                childAspectRatio: 0.7,
+                mainAxisSpacing: 5.0,
+                childAspectRatio: 0.75,
               ),
               itemCount: filteredList.length,
               itemBuilder: (context, index) {
@@ -189,11 +189,11 @@ class _CollectionScreenState extends State<CollectionScreen> {
                     // Navigate to video details
                   },
                   child: Container(
-                    width: 110,
+                    width: 107,
                     margin:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(5),
                       boxShadow: [
                         const BoxShadow(
                           color: Color.fromARGB(255, 103, 82, 82),
@@ -208,7 +208,7 @@ class _CollectionScreenState extends State<CollectionScreen> {
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(5),
                             child: AspectRatio(
                               aspectRatio: 4 / 3,
                               child: Stack(

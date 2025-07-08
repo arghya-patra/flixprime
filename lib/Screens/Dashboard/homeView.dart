@@ -154,11 +154,13 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
             final language = item['language'] ?? '';
 
             return AnimatedSliderItem(
-                imageUrl: imageUrl,
-                title: title,
-                logoUrl: logoUrl,
-                genre: genre,
-                language: language);
+              imageUrl: imageUrl,
+              title: title,
+              logoUrl: logoUrl,
+              genre: genre,
+              language: language,
+              isBottom: position == "top" ? false : true,
+            );
           },
         ),
         // const SizedBox(height: 10),
@@ -414,7 +416,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
     return Column(
       children: [
         SizedBox(
-          height: 160,
+          height: 100,
           child: PageView.builder(
             controller: _pageController,
             itemCount: bannerList.length,
@@ -424,9 +426,9 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                   // Add Navigation to banner details if needed
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  margin: const EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
@@ -437,7 +439,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(5),
                     child: Stack(
                       children: [
                         CachedNetworkImage(
@@ -514,7 +516,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
           ),
         ),
         SizedBox(
-          height: 190, // Increased for better layout
+          height: 160, // Increased for better layout
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: videoList.length,
@@ -531,13 +533,13 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                   // Navigate to video details
                 },
                 child: Container(
-                  width: 110,
+                  width: 107,
                   margin:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      const BoxShadow(
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: const [
+                      BoxShadow(
                         color: Color.fromARGB(255, 103, 82, 82),
                         blurRadius: 5,
                         offset: Offset(2, 2),
@@ -550,7 +552,7 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
                     children: [
                       Expanded(
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(5),
                           child: AspectRatio(
                             aspectRatio: 4 / 3,
                             child: Stack(

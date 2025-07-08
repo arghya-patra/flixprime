@@ -22,7 +22,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
   @override
   void initState() {
+    ServiceManager().getEmail();
+    ServiceManager().getMobile();
     print(ServiceManager.userName);
+    print(ServiceManager.userEmail);
+    print(ServiceManager.userMobile);
     nameController.text = ServiceManager.userName;
     emailController.text = ServiceManager.userEmail;
     mobileController.text = ServiceManager.userMobile;

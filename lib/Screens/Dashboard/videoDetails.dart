@@ -288,12 +288,9 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
               ],
             ),
           ),
-          const Divider(
-            color: Colors.red,
-            thickness: 2,
-          ),
+
           const Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
+            padding: EdgeInsets.only(left: 8.0, right: 4, top: 1, bottom: 4),
             child: Text('Related Videos',
                 style: TextStyle(
                     fontSize: 18,
@@ -301,7 +298,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                     color: Colors.white)),
           ),
           SizedBox(
-            height: 200,
+            height: 160,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: videoData?['related_video_list'].length ?? 0,
@@ -325,44 +322,43 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
           SizedBox(
             height: 10,
           ),
-          const Divider(
-            color: Colors.red,
-            thickness: 2,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
-            child: Text('Episodes',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-          ),
-          SizedBox(
-            height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: videoData?['episode_list'].length ?? 0,
-              itemBuilder: (context, index) {
-                var episode = videoData?['episode_list'][index];
-                return GestureDetector(
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         VideoDetailsScreen(id: episode['id']),
-                    //   ),
-                    // );
-                  },
-                  child: buildEpisodeCard(episode),
-                );
-              },
-            ),
-          ),
-          const Divider(
-            color: Colors.red,
-            thickness: 2,
-          ),
+
+          videoData?['episode_list'] == null
+              ? Container()
+              : const Padding(
+                  padding:
+                      EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
+                  child: Text('Episodes',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                ),
+          videoData?['episode_list'] == null
+              ? Container()
+              : SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: videoData?['episode_list'].length ?? 0,
+                    itemBuilder: (context, index) {
+                      var episode = videoData?['episode_list'][index];
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         VideoDetailsScreen(id: episode['id']),
+                          //   ),
+                          // );
+                        },
+                        child: buildEpisodeCard(episode),
+                      );
+                    },
+                  ),
+                ),
+
           const Padding(
             padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
             child: Text('Recommended Videos',
@@ -372,7 +368,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                     color: Colors.white)),
           ),
           SizedBox(
-            height: 200,
+            height: 160,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: videoData?['recommended_video_list'].length ?? 0,
@@ -443,91 +439,70 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
           context,
           MaterialPageRoute(
             builder: (context) => VideoPlayerWebViewScreen(
-                videoUrl: item!['episode_url']
-                // 'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
-                ),
+              videoUrl: item!['episode_url'],
+            ),
           ),
         );
       },
-      child: Container(
-        width: 110,
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
-            BoxShadow(
-              color: Color.fromARGB(255, 103, 82, 82),
-              blurRadius: 5,
-              offset: Offset(2, 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 145,
+            margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromARGB(255, 103, 82, 82),
+                  blurRadius: 2,
+                  offset: Offset(2, 2),
+                ),
+              ],
+              color: Colors.black,
             ),
-          ],
-          color: Colors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: AspectRatio(
-                  aspectRatio: 4 / 3,
-                  child: Stack(
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: item?['thumbnail'] == 'https://flixprime.in/'
-                            ? "https://flixprime.in/uploads/advertisement/1709202927_0.jpg"
-                            : item?['thumbnail'] ?? '',
-                        placeholder: (_, __) => Shimmer.fromColors(
-                          baseColor: Colors.grey[300]!,
-                          highlightColor: Colors.grey[100]!,
-                          child: Container(color: Colors.grey[300]),
-                        ),
-                        errorWidget: (_, __, ___) =>
-                            const Icon(Icons.error, color: Colors.red),
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9, // Landscape aspect ratio
+                    child: CachedNetworkImage(
+                      imageUrl: item?['thumbnail'] == 'https://flixprime.in/'
+                          ? "https://flixprime.in/uploads/advertisement/1709202927_0.jpg"
+                          : item?['thumbnail'] ?? '',
+                      placeholder: (_, __) => Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(color: Colors.grey[300]),
                       ),
-                      const Center(
-                        child: Icon(
-                          Icons.play_circle_fill,
-                          size: 40,
-                          color: Colors.red,
-                        ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.black54, Colors.transparent],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                            ),
-                          ),
-                          child: Text(
-                            item?['episode_name'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ],
+                      errorWidget: (_, __, ___) =>
+                          const Icon(Icons.error, color: Colors.red),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          // Episode name below the image
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Text(
+              item?['episode_name'] ?? '',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -543,10 +518,10 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
         );
       },
       child: Container(
-        width: 110,
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+        width: 107,
+        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           boxShadow: const [
             BoxShadow(
               color: Color.fromARGB(255, 103, 82, 82),
@@ -561,7 +536,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(5),
                 child: AspectRatio(
                   aspectRatio: 4 / 3,
                   child: Stack(
