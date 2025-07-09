@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flixprime_app/Components/utils.dart';
 import 'package:flixprime_app/Screens/Dashboard/homeView.dart';
 import 'package:flixprime_app/Screens/Dashboard/videoplayerWV.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
@@ -20,6 +21,7 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
   Map<String, dynamic>? videoData;
   bool isLoading = true;
   bool showFullDescription = false;
+  bool isInWatchlist = false;
 
   @override
   void initState() {
@@ -55,6 +57,25 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
         isLoading = false;
       });
     }
+  }
+
+  Future<bool> toggleWatchlist({
+    required String videoId,
+    required bool isInWatchlist,
+  }) async {
+    String url = APIData.login;
+    String action =
+        isInWatchlist ? 'delete-from-watch-list' : 'add-in-watch-list';
+
+    final res = await http.post(Uri.parse(url), body: {
+      'action': action,
+      'authorizationToken': ServiceManager.tokenID,
+      'video_id': videoId,
+    });
+
+    final data = json.decode(res.body);
+    print(data);
+    return data['status'] == 200;
   }
 
   @override
@@ -186,14 +207,61 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                               BorderRadius.circular(12), // Rounded corners
                         ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 0),
+                            horizontal: 27, vertical: 0),
                         elevation: 2, // Slight shadow effect
                       ),
                       child: const Text(
                         'Play',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ),
+                    const SizedBox(width: 16),
+                    isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: () async {
+                              setState(() => isLoading = true);
+
+                              bool success = await toggleWatchlist(
+                                videoId: videoData!['videoDetails']['Id'],
+                                isInWatchlist: isInWatchlist,
+                              );
+
+                              if (success) {
+                                setState(() {
+                                  isInWatchlist = !isInWatchlist;
+                                });
+                                toastMessage(
+                                  message: isInWatchlist
+                                      ? 'Added to Watchlist'
+                                      : 'Removed from Watchlist',
+                                );
+                              } else {
+                                toastMessage(message: 'Something went wrong');
+                              }
+
+                              setState(() => isLoading = false);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isInWatchlist
+                                  ? Colors.red
+                                  : Colors.transparent,
+                              foregroundColor:
+                                  isInWatchlist ? Colors.white : Colors.red,
+                              side: const BorderSide(color: Colors.red),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 19, vertical: 8),
+                              elevation: isInWatchlist ? 2 : 0,
+                            ),
+                            child: Text(
+                              isInWatchlist ? '✓ Saved' : '+  Save',
+                              style: const TextStyle(
+                                  fontSize: 11, fontWeight: FontWeight.w600),
+                            ),
+                          )
                   ],
                 ),
                 const SizedBox(width: 16),

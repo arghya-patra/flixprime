@@ -4,11 +4,10 @@ import 'dart:convert';
 import 'package:flixprime_app/Components/buttons.dart';
 import 'package:flixprime_app/Components/utils.dart';
 import 'package:flixprime_app/Screens/Dashboard/dashboard.dart';
+import 'package:flixprime_app/Screens/Login/forgotpass.dart';
 import 'package:flixprime_app/Screens/Registration/regStep1.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
-import 'package:flutter/material.dart';
-
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
@@ -19,9 +18,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool isPasswordLogin = false; // Toggle between password and OTP login
-  bool isOtpSent = false; // Controls the visibility of the OTP input section
-  String otp = ''; // Stores the entered OTP
+  bool isPasswordLogin = false;
+  bool isOtpSent = false;
+  String otp = '';
   bool isLoading = false;
   String? resOtp = '';
 
@@ -31,10 +30,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool showResend = false;
 
   final TextEditingController mobileController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
-    // TODO: implement initState
     showResend = false;
     super.initState();
   }
@@ -67,42 +66,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: true,
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 80),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  'images/flix_splash.png', // Replace with your logo or a relevant OTT image
+                  'images/flix_splash.png',
                   height: 40,
                   width: MediaQuery.of(context).size.width - 50,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 20),
-                // Login text
                 const Text(
                   'Login',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                // Mobile/Email Field
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Mobile',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: Text('Mobile',
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
                 const SizedBox(height: 10),
                 TextField(
@@ -113,49 +105,123 @@ class _LoginScreenState extends State<LoginScreen> {
                     filled: true,
                     fillColor: Colors.grey[900],
                     prefixIcon: const Padding(
-                      padding: EdgeInsets.only(left: 8.0, top: 2),
+                      padding: EdgeInsets.only(left: 8.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Icon(Icons.flag, color: Colors.white),
                           SizedBox(width: 5),
-                          Text(
-                            '+91',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
+                          Text('+91 ',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
                         ],
                       ),
                     ),
                     hintText: 'Mobile Number',
                     hintStyle: TextStyle(color: Colors.grey[500]),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none),
+                  ),
+                ),
+
+                const SizedBox(height: 18),
+
+                // Login with password button (white)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (mobileController.text.isEmpty) {
+                        toastMessage(message: 'Enter mobile number');
+                        return;
+                      }
+                      setState(() {
+                        isPasswordLogin = true;
+                        isOtpSent = false;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: const Text(
+                      'Login with Password',
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 10),
+                const Text(
+                  'OR',
+                  style: TextStyle(color: Colors.white54, fontSize: 16),
+                ),
+                const SizedBox(height: 10),
+
+                // Send OTP Button (red)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (mobileController.text.isEmpty) {
+                        toastMessage(message: 'Enter mobile number');
+                        return;
+                      }
+                      setState(() {
+                        isPasswordLogin = false;
+                        isOtpSent = true;
+                      });
+                      sendOtp(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: const Text('Send OTP',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                if (isPasswordLogin)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Password',
+                          style: TextStyle(color: Colors.white)),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: passwordController,
+                        obscureText: true,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.grey[900],
+                          hintText: 'Enter your password',
+                          hintStyle: TextStyle(color: Colors.grey[500]),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none),
+                        ),
+                      ),
+                    ],
+                  ),
+
                 if (isOtpSent && !isPasswordLogin)
                   Column(
                     children: [
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Enter OTP',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      // Text(
-                      //   resOtp!,
-                      //   style: TextStyle(color: Colors.white),
-                      // ),
+                      const Text('Enter OTP',
+                          style: TextStyle(color: Colors.white)),
                       const SizedBox(height: 10),
                       PinCodeTextField(
                         appContext: context,
                         length: 4,
-                        onChanged: (value) {
-                          setState(() {
-                            otp = value;
-                          });
-                        },
+                        onChanged: (value) => setState(() => otp = value),
                         backgroundColor: Colors.black,
                         pinTheme: PinTheme(
                           shape: PinCodeFieldShape.box,
@@ -174,60 +240,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                const SizedBox(height: 20),
-                //const SizedBox(height: 10),
-                showResend
-                    ? TextButton(
-                        onPressed: canResendOtp
-                            ? () {
-                                sendOtp(context);
-                              }
-                            : null,
-                        child: Text(
-                          canResendOtp
-                              ? 'Resend OTP'
-                              : 'Resend OTP in $resendCooldown sec',
-                          style: TextStyle(
-                            color: canResendOtp ? Colors.blue : Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-                      )
-                    : Container(),
-                // Send OTP or Login button based on isPasswordLogin
-                if (!isOtpSent && !isPasswordLogin)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (mobileController.text.isNotEmpty) {
-                          setState(() {
-                            isOtpSent = true;
-                          });
-                          sendOtp(context);
-                        } else {
-                          toastMessage(message: 'Please enter credential');
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        'Send OTP',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
+
+                if (showResend && isOtpSent && !isPasswordLogin)
+                  TextButton(
+                    onPressed: canResendOtp ? () => sendOtp(context) : null,
+                    child: Text(
+                      canResendOtp
+                          ? 'Resend OTP'
+                          : 'Resend OTP in $resendCooldown sec',
+                      style: TextStyle(
+                          color: canResendOtp ? Colors.blue : Colors.grey),
                     ),
                   ),
-                const SizedBox(height: 10),
+
                 const SizedBox(height: 20),
-                // Final Login button (visible when isPasswordLogin or isOtpSent is true)
+
+                // Final Login button
                 if (isPasswordLogin || isOtpSent)
                   SizedBox(
                     width: double.infinity,
@@ -235,12 +263,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? LoadingButton()
                         : ElevatedButton(
                             onPressed: () {
-                              submitOtp(context);
-
-                              if (isOtpSent) {
-                                print("Entered OTP: $otp");
+                              if (isPasswordLogin) {
+                                print("Passlogin");
+                                submitOtp(context, true);
                               } else {
-                                print("Login with Password");
+                                print("otpLogin");
+                                submitOtp(context, false);
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -252,40 +280,50 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: const Text(
                               'Login',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
                             ),
                           ),
                   ),
+
                 const SizedBox(height: 20),
+
+                isPasswordLogin
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ForgotPasswordScreen())),
+                            child: const Text('Forgot Password?',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      )
+                    : Container(),
+
+                const SizedBox(height: 20),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'New here?',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    const Text('New here?',
+                        style: TextStyle(color: Colors.white)),
                     const SizedBox(width: 5),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => RegStep()),
-                        );
-                      },
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => RegStep())),
+                      child: const Text('Register',
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -295,7 +333,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<String> sendOtp(context) async {
-    print("Send otp");
     setState(() {
       isLoading = true;
       showResend = true;
@@ -307,96 +344,63 @@ class _LoginScreenState extends State<LoginScreen> {
       'isd': "+91"
     });
     var data = jsonDecode(res.body);
-    print(data);
-
     if (data['status'] == 200) {
-      print(data['authorizationToken']);
+      print(data);
       setState(() {
         resOtp = data['otp'].toString();
+        ServiceManager().setToken('${data['authorizationToken']}');
+        ServiceManager.tokenID = '${data['authorizationToken']}';
       });
-
-      try {
-        setState(() {
-          ServiceManager().setToken('${data['authorizationToken']}');
-          ServiceManager.tokenID = '${data['authorizationToken']}';
-        });
-        startResendTimer();
-      } catch (e) {
-        toastMessage(message: e.toString());
-        setState(() {
-          isLoading = false;
-        });
-        toastMessage(message: 'Something went wrong');
-      }
+      startResendTimer();
     } else {
-      setState(() {
-        isLoading = false;
-      });
       toastMessage(message: 'Invalid data');
     }
-    setState(() {
-      isLoading = false;
-    });
+    setState(() => isLoading = false);
     return 'Success';
   }
 
-  Future<String> submitOtp(context) async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<String> submitOtp(context, isPass) async {
+    setState(() => isLoading = true);
     String url = APIData.login;
-    print(["&&", ServiceManager.tokenID]);
-    var res = await http.post(Uri.parse(url), body: {
+    var otpBody = {
       'action': 'verify-login-otp',
       'authorizationToken': ServiceManager.tokenID,
       'otp': otp
-    });
+    };
+    var passBody = {
+      'action': 'login-with-password',
+      'user_name': mobileController.text,
+      'password': passwordController.text
+    };
+    print(["*****", passBody]);
+
+    var res =
+        await http.post(Uri.parse(url), body: isPass ? passBody : otpBody);
     var data = jsonDecode(res.body);
-    print(data);
-
+    print(["&&&&&&", data]);
     if (data['status'] == 200) {
-      print(data['otp']);
-      try {
-        print("&&&&&&");
-        setState(() {
-          ServiceManager().setUser(data['userDetails']['user_id']);
-          ServiceManager.userID = data['userDetails']['user_id'];
-          ServiceManager()
-              .setToken('${data['userDetails']['authorizationToken']}');
-          ServiceManager.tokenID =
-              '${data['userDetails']['authorizationToken']}';
-          ServiceManager().setName(data['userDetails']['name']);
-          ServiceManager.userName = data['userDetails']['name'];
+      ServiceManager().setUser(data['userDetails']['user_id']);
+      ServiceManager.userID = data['userDetails']['user_id'];
+      ServiceManager().setToken('${data['userDetails']['authorizationToken']}');
+      ServiceManager.tokenID = '${data['userDetails']['authorizationToken']}';
+      ServiceManager().setName(data['userDetails']['name']);
+      ServiceManager.userName = data['userDetails']['name'];
+      ServiceManager().setEmail(data['userDetails']['email']);
+      ServiceManager.userEmail = data['userDetails']['email'];
+      ServiceManager().setMobile(data['userDetails']['mobile']);
+      ServiceManager.userMobile = data['userDetails']['mobile'];
+      ServiceManager().setSubId(data['userDetails']['subscriber_id']);
+      ServiceManager.sId = data['userDetails']['subscriber_id'];
 
-          ServiceManager().setEmail(data['userDetails']['email']);
-          ServiceManager.userEmail = data['userDetails']['email'];
-
-          ServiceManager().setMobile(data['userDetails']['mobile']);
-          ServiceManager.userMobile = data['userDetails']['mobile'];
-
-          ServiceManager().setSubId(data['userDetails']['subscriber_id']);
-          ServiceManager.sId = data['userDetails']['subscriber_id'];
-        });
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => DashboardScreen()),
-            (route) => false);
-      } catch (e) {
-        toastMessage(message: e.toString());
-        setState(() {
-          isLoading = false;
-        });
-        toastMessage(message: 'Something went wrong');
-      }
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        (route) => false,
+      );
     } else {
-      setState(() {
-        isLoading = false;
-      });
       toastMessage(message: 'Invalid data');
     }
-    setState(() {
-      isLoading = false;
-    });
+    setState(() => isLoading = false);
     return 'Success';
   }
 }

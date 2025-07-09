@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flixprime_app/Screens/Dashboard/homeView.dart';
+import 'package:flixprime_app/Screens/Dashboard/videoDetails.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
@@ -23,15 +26,14 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
   }
 
   Future<Map<String, dynamic>> fetchDashboardOverview() async {
-    final url = Uri.parse(APIData.login); // Replace with actual API
+    final url = Uri.parse(APIData.login);
     final response = await http.post(url, body: {
       'action': 'dashboard-overview',
       'authorizationToken': ServiceManager.tokenID
     });
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      return jsonData;
+      return json.decode(response.body);
     } else {
       throw Exception('Failed to load dashboard data');
     }
@@ -42,13 +44,11 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          "Dashboard Overview",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
+        title: const Text("Dashboard Overview",
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: dashboardFuture,
@@ -58,15 +58,17 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
           } else if (snapshot.hasError) {
             return Center(
                 child: Text('Error: ${snapshot.error}',
-                    style: TextStyle(color: Colors.white)));
-          } else if (!snapshot.hasData || snapshot.data == null) {
+                    style: const TextStyle(color: Colors.white)));
+          } else if (!snapshot.hasData) {
             return const Center(
                 child: Text("No data found",
                     style: TextStyle(color: Colors.white)));
           }
 
-          final user = snapshot.data!['userDetails'];
-          final overview = snapshot.data!['dashboardOverview'];
+          final data = snapshot.data!;
+          final user = data['userDetails'];
+          final overview = data['dashboardOverview'];
+          final rentList = data['rent_video_list'] ?? [];
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -75,6 +77,14 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
                 _buildProfileCard(user),
                 const SizedBox(height: 20),
                 _buildOverviewCard(overview),
+                const SizedBox(height: 20),
+                if (rentList.isNotEmpty)
+                  _buildRentList(rentList)
+                else
+                  Text(
+                    "You have no rented videos.",
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  )
               ],
             ),
           );
@@ -108,7 +118,7 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user['name'],
+                Text(user['name'] ?? '',
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -137,18 +147,137 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Subscription Info",
+          const Text("My Plan",
               style: TextStyle(
                   color: Colors.redAccent,
                   fontSize: 18,
                   fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           _infoRow("Plan", overview['plan']),
-          _infoRow("Status", overview['is_plan']),
-          _infoRow("Valid Till", overview['valid_till']),
-          _infoRow("Time Unit", overview['time']),
+          _infoRow("Price", overview['price']),
+          _infoRow("Status", overview['is_plan_active']),
+          if (overview.containsKey('valid_till'))
+            _infoRow("Valid Till", overview['valid_till']),
+          if (overview.containsKey('time')) _infoRow("Time", overview['time']),
         ],
       ),
+    );
+  }
+
+  Widget _buildRentList(List<dynamic> rentList) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "My Rent",
+          style: TextStyle(
+              color: Colors.redAccent,
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: rentList.length,
+            itemBuilder: (context, index) {
+              final item = rentList[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            VideoDetailsScreen(id: item['id'])),
+                  );
+                },
+                child: Container(
+                  width: 107,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromARGB(255, 103, 82, 82),
+                        blurRadius: 5,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Stack(
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl: item['thumbnail'],
+                                  placeholder: (_, __) => Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: Container(
+                                      color: Colors.grey[300],
+                                    ),
+                                  ),
+                                  errorWidget: (_, __, ___) => const Icon(
+                                      Icons.error,
+                                      color: Colors.red),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                                if (item['content_type'] != 'Premium')
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: ClipPath(
+                                      clipper: CornerTriangleClipper(),
+                                      child: Container(
+                                        width: 55,
+                                        height: 55,
+                                        color: item['content_type'] == 'Free'
+                                            ? Colors.yellow[700]
+                                            : Colors.red,
+                                        child: Align(
+                                          alignment: const Alignment(0.7, -0.5),
+                                          child: Transform.rotate(
+                                            angle: 0.785398, // 45 degrees
+                                            child: Text(
+                                              item['content_type'] ?? '',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: item['content_type'] ==
+                                                        'Rent'
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -162,11 +291,9 @@ class _DashboardOverviewScreenState extends State<DashboardOverviewScreen> {
                   color: Colors.white70, fontWeight: FontWeight.w600)),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              value ?? "N/A",
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+            child: Text(label == 'Price' ? "Rs. $value" : value ?? "N/A",
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

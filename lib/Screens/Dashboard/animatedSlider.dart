@@ -135,8 +135,8 @@ class AnimatedSliderItemState extends State<AnimatedSliderItem>
                 ),
               ),
               Positioned(
-                bottom: 90,
-                left: 50,
+                bottom: widget.isBottom ? 90 : 20,
+                left: 30,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -47,6 +47,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
       }
       setState(() {
         watchList = data['watch_list'];
+        print(["****", watchList]);
       });
     } else {
       // Handle error
@@ -55,17 +56,35 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
   }
 
   Future<void> removeFromWatchlist(String id) async {
-    // API call to remove item from watchlist
-    // Assuming API URL: 'YOUR_REMOVE_API_URL/$id'
-    final response = await http.delete(Uri.parse('YOUR_REMOVE_API_URL/$id'));
+    String url = APIData.login;
+
+    print(url.toString());
+    var response = await http.post(Uri.parse(url), body: {
+      'action': 'delete-from-watch-list',
+      'authorizationToken': ServiceManager.tokenID,
+      'video_id': id,
+    });
+    print(response.body);
 
     if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['status'] == 201 &&
+          data['isSuccess'] == "false" &&
+          data['error'] == "Token does not exist!") {
+        print("Logout: Invalid token detected.");
+        ServiceManager().removeAll();
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false);
+        return;
+      }
       setState(() {
-        watchList.removeWhere((item) => item['id'] == id);
+        fetchWatchlist();
       });
     } else {
       // Handle error
-      print('Failed to remove item from watchlist');
+      print('Failed to load watchlist');
     }
   }
 
