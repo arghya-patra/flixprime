@@ -321,6 +321,15 @@ class _HomeViewScreenState extends State<HomeViewScreen> {
         (apiData!['Movies'] != null && apiData!['Movies'].isNotEmpty)
             ? _buildSection("Movies", apiData!['Movies'])
             : Container(),
+        SizedBox(
+          height: 10,
+        ),
+        (apiData!['Shorts'] != null && apiData!['Shorts'].isNotEmpty)
+            ? _buildSection("Shorts", apiData!['Shorts'])
+            : Container(),
+        SizedBox(
+          height: 10,
+        ),
         (apiData!['Series'] != null && apiData!['Series'].isNotEmpty)
             ? _buildSection("Series", apiData!['Series'])
             : Container(),
