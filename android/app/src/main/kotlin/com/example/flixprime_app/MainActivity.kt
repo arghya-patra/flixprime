@@ -1,4 +1,4 @@
-package com.example.flixprime_app
+package com.ep.flixprime
 
 import io.flutter.embedding.android.FlutterActivity
 

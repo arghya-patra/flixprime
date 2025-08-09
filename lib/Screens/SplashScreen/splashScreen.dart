@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Image.asset(
-        'images/FlixPrimeAnim.gif',
+        'images/flix_anim.gif',
         height: MediaQuery.of(context).size.height,
         fit: BoxFit.contain,
       ),

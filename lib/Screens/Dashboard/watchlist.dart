@@ -46,7 +46,7 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
         return;
       }
       setState(() {
-        watchList = data['watch_list'];
+        watchList = data['watch_list'] ?? [];
         print(["****", watchList]);
       });
     } else {

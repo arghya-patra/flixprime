@@ -6,8 +6,10 @@ import 'package:flixprime_app/Screens/Dashboard/videoplayerWV.dart';
 import 'package:flixprime_app/Service/apiManager.dart';
 import 'package:flixprime_app/Service/serviceManager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class VideoDetailsScreen extends StatefulWidget {
   final String? id;
@@ -76,6 +78,49 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
     final data = json.decode(res.body);
     print(data);
     return data['status'] == 200;
+  }
+
+  void showVideoDialog2(BuildContext context, String videoUrl) {
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(videoUrl));
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.black,
+        insetPadding: const EdgeInsets.all(16),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: WebViewWidget(controller: controller),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showVideoDialog(BuildContext context, String videoUrl) async {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VideoFullScreenPage(videoUrl: videoUrl),
+      ),
+    ).then((_) async {
+      // Reset orientation & UI when closing
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    });
   }
 
   @override
@@ -186,19 +231,25 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        videoData!['videoDetails']['video_url'] != null
-                            ? Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      VideoPlayerWebViewScreen(
-                                    videoUrl: videoData!['videoDetails']
-                                        ['video_url'],
-                                    // 'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
-                                  ),
-                                ),
-                              )
-                            : null;
+                        final videoUrl =
+                            videoData!['videoDetails']['video_url'];
+                        print(videoData!['videoDetails']['video_url']);
+
+                        if (videoUrl != null && videoUrl.isNotEmpty) {
+                          showVideoDialog(context, videoUrl);
+                        }
+
+                        //  Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           VideoPlayerWebViewScreen(
+                        //         videoUrl: videoData!['videoDetails']
+                        //             ['video_url'],
+                        //         // 'https://iframe.mediadelivery.net/embed/271549/78f12111-23c0-4a2e-8ec5-e7da3b4d9bea?token=a9a6d6d0cc97c02ec47012f05c123c7a517f93c700e59cd8b384bb2d737eb4e4&expires=2692722600&autoplay=false&loop=true&muted=true&preload=true&responsive=true',
+                        //       ),
+                        //     ),
+                        //   )
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red, // Yellow button color
@@ -357,36 +408,42 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
             ),
           ),
 
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 4, top: 1, bottom: 4),
-            child: Text('Related Videos',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-          ),
-          SizedBox(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: videoData?['related_video_list'].length ?? 0,
-              itemBuilder: (context, index) {
-                var relatedVideo = videoData?['related_video_list'][index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            VideoDetailsScreen(id: relatedVideo['id']),
-                      ),
-                    );
-                  },
-                  child: buildRelatedVideoCard(relatedVideo),
-                );
-              },
-            ),
-          ),
+          videoData?['related_video_list'] == null
+              ? Container()
+              : const Padding(
+                  padding:
+                      EdgeInsets.only(left: 8.0, right: 4, top: 1, bottom: 4),
+                  child: Text('Related Videos',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                ),
+          videoData?['related_video_list'] == null
+              ? Container()
+              : SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: videoData?['related_video_list'].length ?? 0,
+                    itemBuilder: (context, index) {
+                      var relatedVideo =
+                          videoData?['related_video_list'][index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VideoDetailsScreen(id: relatedVideo['id']),
+                            ),
+                          );
+                        },
+                        child: buildEpisodeCard(relatedVideo),
+                      );
+                    },
+                  ),
+                ),
           SizedBox(
             height: 10,
           ),
@@ -427,38 +484,44 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
                   ),
                 ),
 
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
-            child: Text('Recommended Videos',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-          ),
+          videoData?['recommended_video_list'] == null
+              ? Container()
+              : const Padding(
+                  padding:
+                      EdgeInsets.only(left: 8.0, right: 8, top: 1, bottom: 4),
+                  child: Text('Recommended Videos',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                ),
+          videoData?['recommended_video_list'] == null
+              ? Container()
+              : SizedBox(
+                  height: 160,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: videoData?['recommended_video_list'].length ?? 0,
+                    itemBuilder: (context, index) {
+                      var recomVideo =
+                          videoData?['recommended_video_list'][index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  VideoDetailsScreen(id: recomVideo['id']),
+                            ),
+                          );
+                        },
+                        child: buildRelatedVideoCard(recomVideo),
+                      );
+                    },
+                  ),
+                ),
           SizedBox(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: videoData?['recommended_video_list'].length ?? 0,
-              itemBuilder: (context, index) {
-                var recomVideo = videoData?['recommended_video_list'][index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            VideoDetailsScreen(id: recomVideo['id']),
-                      ),
-                    );
-                  },
-                  child: buildRelatedVideoCard(recomVideo),
-                );
-              },
-            ),
-          ),
-          SizedBox(
-            height: 10,
+            height: 60,
           ),
         ],
       ),
@@ -895,4 +958,38 @@ class _VideoDetailsScreenState extends State<VideoDetailsScreen>
   //     );
   //   });
   // }
+}
+
+class VideoFullScreenPage extends StatelessWidget {
+  final String videoUrl;
+  const VideoFullScreenPage({Key? key, required this.videoUrl})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(videoUrl));
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: WebViewWidget(controller: controller),
+          ),
+          Positioned(
+            top: 20,
+            left: 20,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 28),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
